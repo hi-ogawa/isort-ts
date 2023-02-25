@@ -1,17 +1,23 @@
 import fs from "node:fs";
 import process from "node:process";
-import { partition } from "lodash";
+import { cac } from "cac";
+import consola from "consola";
 import { tsTransformIsort } from "./transformer";
 
-//
-// simple standalone cli
-//
+const cli = cac("isort-ts");
 
-async function main() {
-  const args = process.argv.slice(2);
-  const [fixArgs, filePaths] = partition(args, (v) => v === "--fix");
-  const fixMode = fixArgs.length > 0;
+cli
+  .help()
+  .command("[...files]", "check import order")
+  .option("--fix", "apply sorting in-place")
+  .option("--cache", "enable caching (TODO)")
+  .option("--git", "collect files based on git (TODO)")
+  .action(runCommand);
 
+async function runCommand(
+  files: string[],
+  options: { fix: boolean; git: boolean; cache: boolean }
+) {
   const results = {
     ok: 0,
     nochange: 0,
@@ -23,24 +29,24 @@ async function main() {
       const input = await fs.promises.readFile(filePath, "utf-8");
       const output = tsTransformIsort(input);
       if (output !== input) {
-        if (fixMode) {
+        if (options.fix) {
           await fs.promises.writeFile(filePath, output);
         }
-        console.log("[OKK]", filePath);
+        consola.info(filePath);
         results.ok++;
       } else {
-        console.log("[NOC]", filePath);
+        consola.success(filePath);
         results.nochange++;
       }
     } catch (e) {
-      console.log("[ERR]", filePath);
+      consola.error(filePath, e);
       results.error++;
     }
   }
 
-  await Promise.all(filePaths.map((v) => runTransform(v)));
+  await Promise.all(files.map((v) => runTransform(v)));
 
-  if (fixMode) {
+  if (options.fix) {
     if (results.error) {
       process.exit(1);
     }
@@ -48,6 +54,16 @@ async function main() {
     if (results.ok || results.error) {
       process.exit(1);
     }
+  }
+}
+
+async function main() {
+  try {
+    cli.parse(undefined, { run: false });
+    await cli.runMatchedCommand();
+  } catch (e: unknown) {
+    consola.error(e);
+    process.exit(1);
   }
 }
 

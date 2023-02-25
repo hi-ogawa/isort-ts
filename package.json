@@ -28,6 +28,8 @@
     "release": "pnpm publish --no-git-checks --access public"
   },
   "dependencies": {
+    "cac": "^6.7.14",
+    "consola": "^2.15.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
