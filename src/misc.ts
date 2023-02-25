@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
+import fs from "node:fs";
 import { builtinModules } from "node:module";
+import { dirname } from "node:path";
 import { tinyassert } from "@hiogawa/utils";
+import consola from "consola";
 
 const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
@@ -45,14 +48,34 @@ export class LruCache<I, K, V> {
   constructor(
     private options: {
       maxSize: number;
-      cachedFn: (input: K) => V;
+      cachedFn: (input: I) => V;
       hashFn: (input: I) => K;
     }
   ) {
     tinyassert(options.maxSize > 0);
   }
 
-  run(key: K): [boolean, V] {
+  async load(file: string, deserialize: (s: string) => Map<K, V>) {
+    if (!fs.existsSync(file)) {
+      return;
+    }
+    const content = await fs.promises.readFile(file, "utf-8");
+    const map = deserialize(content);
+    this.map = map;
+    this.options.maxSize = Math.max(this.options.maxSize, 2 * map.size);
+  }
+
+  async store(file: string, serialize: (map: Map<K, V>) => string) {
+    const s = serialize(this.map);
+    const filedir = dirname(file);
+    if (!fs.existsSync(filedir)) {
+      await fs.promises.mkdir(filedir, { recursive: true });
+    }
+    await fs.promises.writeFile(file, s);
+  }
+
+  run(input: I): [boolean, V] {
+    const key = this.options.hashFn(input);
     let value: V;
     let hit = this.map.has(key);
     if (hit) {
@@ -61,7 +84,7 @@ export class LruCache<I, K, V> {
       this.map.delete(key);
       this.map.set(key, value);
     } else {
-      value = this.options.cachedFn(key);
+      value = this.options.cachedFn(input);
       this.map.set(key, value);
       this.popUntilMaxSize();
     }
@@ -77,6 +100,31 @@ export class LruCache<I, K, V> {
       this.map.delete(next.value);
     }
   }
+}
+
+export function serializeMap(map: Map<string, string>): string {
+  const pairs: [string, string][] = [...map];
+  return JSON.stringify(pairs);
+}
+
+export function deserializeMap(s: string): Map<string, string> {
+  try {
+    const pairs: unknown = JSON.parse(s);
+    if (
+      Array.isArray(pairs) &&
+      pairs.every(
+        (pair: unknown) =>
+          Array.isArray(pair) &&
+          pair.length === 2 &&
+          pair.every((el) => typeof el === "string")
+      )
+    ) {
+      return new Map(pairs);
+    }
+  } catch (e) {
+    consola.error(e);
+  }
+  return new Map();
 }
 
 export function hashString(input: string): string {

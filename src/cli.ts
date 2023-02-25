@@ -5,7 +5,7 @@ import process from "node:process";
 import { promisify } from "node:util";
 import { cac } from "cac";
 import consola from "consola";
-import { hashString, LruCache } from "./misc";
+import { deserializeMap, hashString, LruCache, serializeMap } from "./misc";
 import { tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
@@ -32,12 +32,13 @@ async function runCommand(
     error: 0,
   };
 
-  // TODO: persist to node_modules/.cache/@hiogawa/isort-ts/.cache
   const lruCache = new LruCache({
-    maxSize: 1000, // TODO: tweak
-    cachedFn: tsTransformIsort,
+    maxSize: 2 * files.length,
+    cachedFn: tsTransformIsort, // TODO: avoid caching entire output
     hashFn: hashString, // TODO: hash options
   });
+  const CACHE_PATH = "node_modules/.cache/@hiogawa/isort-ts/.cache-v1"; // TODO: configurable
+  await lruCache.load(CACHE_PATH, deserializeMap);
 
   async function runTransform(filePath: string) {
     try {
@@ -63,6 +64,7 @@ async function runCommand(
   }
 
   await Promise.all(files.map((v) => runTransform(v)));
+  await lruCache.store(CACHE_PATH, serializeMap);
 
   if (options.fix) {
     if (results.error) {
