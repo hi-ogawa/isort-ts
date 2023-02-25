@@ -19,8 +19,8 @@ async function runCommand(
   options: { fix: boolean; git: boolean; cache: boolean }
 ) {
   const results = {
-    ok: 0,
-    nochange: 0,
+    fixable: 0,
+    correct: 0,
     error: 0,
   };
 
@@ -33,10 +33,10 @@ async function runCommand(
           await fs.promises.writeFile(filePath, output);
         }
         consola.info(filePath);
-        results.ok++;
+        results.fixable++;
       } else {
         consola.success(filePath);
-        results.nochange++;
+        results.correct++;
       }
     } catch (e) {
       consola.error(filePath, e);
@@ -51,7 +51,7 @@ async function runCommand(
       process.exit(1);
     }
   } else {
-    if (results.ok || results.error) {
+    if (results.fixable || results.error) {
       process.exit(1);
     }
   }
