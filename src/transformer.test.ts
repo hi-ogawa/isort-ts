@@ -139,13 +139,13 @@ import { z, w } from "a";
 import "b";
 import "a";
 
-<input />
+<input /> satisfies unknown;
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
       "import \\"a\\";
       import \\"b\\";
 
-      <input />
+      <input /> satisfies unknown;
       "
     `);
   });
@@ -157,5 +157,25 @@ some-random # stuff
     expect(() => tsTransformIsort(input)).toThrowErrorMatchingInlineSnapshot(
       '"isort-ts parse error"'
     );
+  });
+
+  it("default-order", () => {
+    const input = `\
+import "./z";
+import "./a";
+import "z";
+import "a";
+import "process";
+import "node:process";
+`;
+    expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
+      "import \\"node:process\\";
+      import \\"process\\";
+      import \\"a\\";
+      import \\"z\\";
+      import \\"./a\\";
+      import \\"./z\\";
+      "
+    `);
   });
 });
