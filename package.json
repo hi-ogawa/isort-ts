@@ -1,0 +1,52 @@
+{
+  "name": "@hiogawa/isort-ts",
+  "version": "1.0.0-pre.1",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "bin": "./bin/cli.js",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hi-ogawa/isort-ts"
+  },
+  "scripts": {
+    "dev": "run-p -c dev:*",
+    "dev:tsup": "tsup --watch",
+    "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
+    "build": "tsup",
+    "test": "vitest",
+    "tsc": "tsc -b",
+    "lint": "run-s lint:*",
+    "lint-check": "run-s lint-check:*",
+    "lint:isort": "pnpm lint-check:isort --fix",
+    "lint-check:isort": "./bin/cli.js $(git grep -l . '*.ts') $(git ls-files --others --exclude-standard '*.ts')",
+    "lint:prettier": "prettier --write --cache .",
+    "lint-check:prettier": "prettier --check --cache .",
+    "release": "pnpm publish --no-git-checks --access public"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@hiogawa/utils": "^1.0.3",
+    "@tsconfig/strictest": "^1.0.2",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.14.1",
+    "@types/prettier": "^2.7.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.3",
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.4",
+    "vitest": "^0.28.5"
+  },
+  "peerDependencies": {
+    "prettier": "*",
+    "typescript": "*"
+  },
+  "volta": {
+    "node": "18.14.0"
+  }
+}

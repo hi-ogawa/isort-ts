@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"]
+  }
+}
