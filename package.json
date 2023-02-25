@@ -16,7 +16,6 @@
     "dev": "run-p -c dev:*",
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
-    "dev-transform": "jscodeshift --no-babel --transform dist/index.js",
     "build": "tsup",
     "test": "vitest",
     "tsc": "tsc -b",

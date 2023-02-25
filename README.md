@@ -11,7 +11,7 @@ npm install -D typescript prettier @hiogawa/isort-ts
 npx isort-ts --fix $(git grep -l . '*.ts' '*.tsx') $(git ls-files --others --exclude-standard '*.ts')
 
 # as prettier-plugin
-npx prettier --write . --plugin=@hiogawa/isort-ts/dist/prettier-plugin
+npx prettier --write . --plugin=@hiogawa/isort-ts
 ```
 
 ## development
@@ -21,6 +21,7 @@ pnpm i
 pnpm dev
 pnpm test
 ./bin/cli.js src/*.ts --fix
+npx prettier --write . --plugin=./dist/index.js
 
 # release
 pnpm build
