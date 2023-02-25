@@ -3,6 +3,7 @@ interface IsortOptions {
   isortOrder: RegExp[];
   isortSpecifiers: boolean;
   isortCaseInsensitive: boolean;
+  isortIgnoreComments: string[];
 }
 
 // TODO: configurable
@@ -10,6 +11,7 @@ export const DEFAULT_OPTIONS: IsortOptions = {
   isortOrder: [/^[./]/],
   isortSpecifiers: true,
   isortCaseInsensitive: true,
+  isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
 
 export function groupNeighborBy<T, K>(ls: T[], f: (x: T) => K): [K, T[]][] {

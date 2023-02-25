@@ -3,8 +3,6 @@ import { range, sortBy } from "lodash";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, groupNeighborBy } from "./misc";
 
-const IGNORE_COMMENTS = ["isort-ignore"];
-
 // minimum parse data to allow sorting afterward
 interface ImportDeclarationInfo {
   start: number;
@@ -40,7 +38,9 @@ function extraceImportDeclaration(
     [...node.statements],
     (stmt) =>
       ts.isImportDeclaration(stmt) &&
-      !IGNORE_COMMENTS.some((comment) => getTrivia(stmt).includes(comment))
+      !DEFAULT_OPTIONS.isortIgnoreComments.some((comment) =>
+        getTrivia(stmt).includes(comment)
+      )
   );
   const result: ImportDeclarationInfo[][] = [];
   for (const [ok, statements] of groups) {
@@ -106,9 +106,11 @@ export function tsAnalyze(code: string) {
 export function tsTransformIsort(code: string): string {
   const groups = tsAnalyze(code);
   for (const group of groups) {
-    for (const decl of group) {
-      if (decl.specifiers) {
-        code = sortImportSpecifiers(code, decl.specifiers);
+    if (DEFAULT_OPTIONS.isortSpecifiers) {
+      for (const decl of group) {
+        if (decl.specifiers) {
+          code = sortImportSpecifiers(code, decl.specifiers);
+        }
       }
     }
     code = sortImportDeclarations(code, group);
