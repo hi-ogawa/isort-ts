@@ -1,7 +1,28 @@
-# isort-ts (wip)
+# isort-ts
 
 Sort `ImportDeclaration` and `ImportSpecifier` based on a simple typescript transform.
 
-## todo
+## usage
 
-- POC in https://github.com/hi-ogawa/jscodeshift-isort/pull/6
+```sh
+npm install -D typescript prettier @hiogawa/isort-ts
+
+# as standalone cli
+npx isort-ts --fix $(git grep -l . '*.ts' '*.tsx') $(git ls-files --others --exclude-standard '*.ts')
+
+# as prettier-plugin
+npx prettier --write . --plugin=@hiogawa/isort-ts/dist/prettier-plugin
+```
+
+## development
+
+```sh
+pnpm i
+pnpm dev
+pnpm test
+./bin/cli.js src/*.ts --fix
+
+# release
+pnpm build
+pnpm release
+```
