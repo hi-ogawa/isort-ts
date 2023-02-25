@@ -1,53 +1,98 @@
+import { exec } from "node:child_process";
 import fs from "node:fs";
+import { performance } from "node:perf_hooks";
 import process from "node:process";
-import { partition } from "lodash";
+import { promisify } from "node:util";
+import { cac } from "cac";
+import consola from "consola";
 import { tsTransformIsort } from "./transformer";
 
-//
-// simple standalone cli
-//
+const cli = cac("isort-ts");
 
-async function main() {
-  const args = process.argv.slice(2);
-  const [fixArgs, filePaths] = partition(args, (v) => v === "--fix");
-  const fixMode = fixArgs.length > 0;
+cli
+  .help()
+  .command("[...files]", "check import order")
+  .option("--fix", "apply sorting in-place")
+  .option("--git", "collect files based on git")
+  .option("--cache", "enable caching (TODO)")
+  .action(runCommand);
+
+async function runCommand(
+  files: string[],
+  options: { fix: boolean; git: boolean; cache: boolean }
+) {
+  if (options.git) {
+    files = files.concat(await collectFilesByGit());
+  }
 
   const results = {
-    ok: 0,
-    nochange: 0,
+    fixable: 0,
+    correct: 0,
     error: 0,
   };
 
   async function runTransform(filePath: string) {
     try {
       const input = await fs.promises.readFile(filePath, "utf-8");
-      const output = tsTransformIsort(input);
+      const [output, time] = measureSync(() => tsTransformIsort(input));
       if (output !== input) {
-        if (fixMode) {
+        if (options.fix) {
           await fs.promises.writeFile(filePath, output);
         }
-        console.log("[OKK]", filePath);
-        results.ok++;
+        consola.info(filePath, `${time.toFixed(0)} ms`);
+        results.fixable++;
       } else {
-        console.log("[NOC]", filePath);
-        results.nochange++;
+        consola.success(filePath, `${time.toFixed(0)} ms`);
+        results.correct++;
       }
     } catch (e) {
-      console.log("[ERR]", filePath);
+      consola.error(filePath, e);
       results.error++;
     }
   }
 
-  await Promise.all(filePaths.map((v) => runTransform(v)));
+  await Promise.all(files.map((v) => runTransform(v)));
 
-  if (fixMode) {
+  if (options.fix) {
     if (results.error) {
       process.exit(1);
     }
   } else {
-    if (results.ok || results.error) {
+    if (results.fixable || results.error) {
       process.exit(1);
     }
+  }
+}
+
+const promisifyExec = promisify(exec);
+
+async function collectFilesByGit(): Promise<string[]> {
+  const COMMANDS = [
+    "git grep -l . '*.ts' '*.tsx'",
+    "git ls-files --others --exclude-standard '*.ts' '*.tsx'",
+  ];
+  let files: string[] = [];
+  for (const command of COMMANDS) {
+    const result = await promisifyExec(command);
+    files = files.concat(result.stdout.split("\n").filter(Boolean));
+  }
+  return files;
+}
+
+function measureSync<T>(f: () => T): [T, number] {
+  const t0 = performance.now();
+  const y = f();
+  const t1 = performance.now();
+  return [y, t1 - t0];
+}
+
+async function main() {
+  try {
+    cli.parse(undefined, { run: false });
+    await cli.runMatchedCommand();
+  } catch (e: unknown) {
+    consola.error(e);
+    process.exit(1);
   }
 }
 
