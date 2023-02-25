@@ -149,4 +149,13 @@ import "a";
       "
     `);
   });
+
+  it("syntax-error", () => {
+    const input = `\
+some-random # stuff
+`;
+    expect(() => tsTransformIsort(input)).toThrowErrorMatchingInlineSnapshot(
+      '"isort-ts parse error"'
+    );
+  });
 });
