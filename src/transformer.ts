@@ -87,15 +87,17 @@ function getTrivia(node: ts.Node): string {
 
 export function tsAnalyze(code: string) {
   const wrapper = new TransformerWrapper();
-  ts.transpileModule(code, {
+  const result = ts.transpileModule(code, {
     compilerOptions: {},
-    // TODO: tsx mode?
     fileName: "__dummy.tsx",
-    reportDiagnostics: false,
+    reportDiagnostics: true,
     transformers: {
       before: [wrapper.getTransformer()],
     },
   });
+  if (result.diagnostics && result.diagnostics?.length > 0) {
+    throw new Error("isort-ts parse error");
+  }
   return wrapper.result;
 }
 
