@@ -58,9 +58,10 @@ async function runCommand(
         results.correct++;
       } else {
         if (options.fix) {
-          // TODO: once it's fixed, we can cache such `output` as `result.ok`
-          //       but, if prettier is follwoding isort-ts, then the output will be once more overwritten...
           await fs.promises.writeFile(filePath, result.output);
+          // since `output` will be a correct `input`, it can be added to cache.
+          // note that, however, if prettier is follwoding isort-ts, then the output will be once more overwritten.
+          lruCache.cache(result.output);
         }
         consola.info(filePath, timeMessage);
         results.fixable++;
@@ -136,10 +137,18 @@ export class LruCacheSet<I, V> {
     }
     const result = this.options.cachedFn(input);
     if (result.ok) {
-      this.cached.add(key);
-      this.popUntilMaxSize();
+      this.cacheKey(key);
     }
     return result;
+  }
+
+  cache(input: I) {
+    this.cacheKey(this.options.hashFn(input));
+  }
+
+  private cacheKey(key: string) {
+    this.cached.add(key);
+    this.popUntilMaxSize();
   }
 
   private popUntilMaxSize() {
