@@ -21,8 +21,8 @@
     "tsc": "tsc -b",
     "lint": "run-s lint:*",
     "lint-check": "run-s lint-check:*",
-    "lint:isort": "pnpm lint-check:isort --fix",
-    "lint-check:isort": "./bin/cli.js $(git grep -l . '*.ts') $(git ls-files --others --exclude-standard '*.ts')",
+    "lint:isort": "./bin/cli.js --git --fix",
+    "lint-check:isort": "./bin/cli.js --git",
     "lint:prettier": "prettier --write --cache .",
     "lint-check:prettier": "prettier --check --cache .",
     "release": "pnpm publish --no-git-checks --access public"
