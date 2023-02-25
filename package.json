@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.0.0-pre.4",
+  "version": "1.0.0-pre.5",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
@@ -21,8 +21,8 @@
     "tsc": "tsc -b",
     "lint": "run-s lint:*",
     "lint-check": "run-s lint-check:*",
-    "lint:isort": "./bin/cli.js --git --fix",
-    "lint-check:isort": "./bin/cli.js --git",
+    "lint:isort": "pnpm lint-check:isort --fix",
+    "lint-check:isort": "./bin/cli.js --git --cache",
     "lint:prettier": "prettier --write --cache .",
     "lint-check:prettier": "prettier --check --cache .",
     "release": "pnpm publish --no-git-checks --access public"
