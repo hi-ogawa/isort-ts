@@ -1,5 +1,7 @@
+import { exec } from "node:child_process";
 import fs from "node:fs";
 import process from "node:process";
+import { promisify } from "node:util";
 import { cac } from "cac";
 import consola from "consola";
 import { tsTransformIsort } from "./transformer";
@@ -10,14 +12,18 @@ cli
   .help()
   .command("[...files]", "check import order")
   .option("--fix", "apply sorting in-place")
+  .option("--git", "collect files based on git")
   .option("--cache", "enable caching (TODO)")
-  .option("--git", "collect files based on git (TODO)")
   .action(runCommand);
 
 async function runCommand(
   files: string[],
   options: { fix: boolean; git: boolean; cache: boolean }
 ) {
+  if (options.git) {
+    files = files.concat(await collectFilesByGit());
+  }
+
   const results = {
     fixable: 0,
     correct: 0,
@@ -55,6 +61,21 @@ async function runCommand(
       process.exit(1);
     }
   }
+}
+
+const promisifyExec = promisify(exec);
+
+async function collectFilesByGit(): Promise<string[]> {
+  const COMMANDS = [
+    "git grep -l . '*.ts' '*.tsx'",
+    "git ls-files --others --exclude-standard '*.ts' '*.tsx'",
+  ];
+  let files: string[] = [];
+  for (const command of COMMANDS) {
+    const result = await promisifyExec(command);
+    files = files.concat(result.stdout.split("\n").filter(Boolean));
+  }
+  return files;
 }
 
 async function main() {
