@@ -1,6 +1,6 @@
-import { partition } from "lodash";
 import fs from "node:fs";
 import process from "node:process";
+import { partition } from "lodash";
 import { tsTransformIsort } from "./transformer";
 
 //

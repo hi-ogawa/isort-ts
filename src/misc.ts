@@ -1,3 +1,9 @@
+import { builtinModules } from "node:module";
+
+const NODE_BUILTIN_RE = new RegExp(
+  "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
+);
+
 // cf. https://github.com/trivago/prettier-plugin-sort-imports/blob/89d66f706423e44f29d525529af37e5d41a74133/src/index.ts#L9
 interface IsortOptions {
   isortOrder: RegExp[];
@@ -8,7 +14,7 @@ interface IsortOptions {
 
 // TODO: configurable
 export const DEFAULT_OPTIONS: IsortOptions = {
-  isortOrder: [/^[./]/],
+  isortOrder: [NODE_BUILTIN_RE, /^[^./]/, /[^./]/],
   isortSpecifiers: true,
   isortCaseInsensitive: true,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
