@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import { builtinModules } from "node:module";
+import { tinyassert } from "@hiogawa/utils";
 
 const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
@@ -35,4 +37,48 @@ export function groupNeighborBy<T, K>(ls: T[], f: (x: T) => K): [K, T[]][] {
     }
   }
   return groups;
+}
+
+export class LruCache<I, K, V> {
+  private map = new Map<K, V>();
+
+  constructor(
+    private options: {
+      maxSize: number;
+      cachedFn: (input: K) => V;
+      hashFn: (input: I) => K;
+    }
+  ) {
+    tinyassert(options.maxSize > 0);
+  }
+
+  run(key: K): [boolean, V] {
+    let value: V;
+    let hit = this.map.has(key);
+    if (hit) {
+      // need to delete/set to simualte LRU
+      value = this.map.get(key)!;
+      this.map.delete(key);
+      this.map.set(key, value);
+    } else {
+      value = this.options.cachedFn(key);
+      this.map.set(key, value);
+      this.popUntilMaxSize();
+    }
+    return [hit, value];
+  }
+
+  private popUntilMaxSize() {
+    while (this.map.size > this.options.maxSize) {
+      const next = this.map.keys().next();
+      if (next.done) {
+        break;
+      }
+      this.map.delete(next.value);
+    }
+  }
+}
+
+export function hashString(input: string): string {
+  return createHash("sha256").update(input).digest("base64");
 }

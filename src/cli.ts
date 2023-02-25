@@ -5,6 +5,7 @@ import process from "node:process";
 import { promisify } from "node:util";
 import { cac } from "cac";
 import consola from "consola";
+import { hashString, LruCache } from "./misc";
 import { tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
@@ -31,18 +32,28 @@ async function runCommand(
     error: 0,
   };
 
+  // TODO: persist to node_modules/.cache/@hiogawa/isort-ts/.cache
+  const lruCache = new LruCache({
+    maxSize: 1000, // TODO: tweak
+    cachedFn: tsTransformIsort,
+    hashFn: hashString, // TODO: hash options
+  });
+
   async function runTransform(filePath: string) {
     try {
       const input = await fs.promises.readFile(filePath, "utf-8");
-      const [output, time] = measureSync(() => tsTransformIsort(input));
+      const [[cacheHit, output], time] = measureSync(() => lruCache.run(input));
+      const message = [`${time.toFixed(0)} ms`, cacheHit && "(cached)"]
+        .filter(Boolean)
+        .join(" ");
       if (output !== input) {
         if (options.fix) {
           await fs.promises.writeFile(filePath, output);
         }
-        consola.info(filePath, `${time.toFixed(0)} ms`);
+        consola.info(filePath, message);
         results.fixable++;
       } else {
-        consola.success(filePath, `${time.toFixed(0)} ms`);
+        consola.success(filePath, message);
         results.correct++;
       }
     } catch (e) {
