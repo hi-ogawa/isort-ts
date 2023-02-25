@@ -1,5 +1,6 @@
 import { exec } from "node:child_process";
 import fs from "node:fs";
+import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
 import { cac } from "cac";
@@ -33,15 +34,15 @@ async function runCommand(
   async function runTransform(filePath: string) {
     try {
       const input = await fs.promises.readFile(filePath, "utf-8");
-      const output = tsTransformIsort(input);
+      const [output, time] = measureSync(() => tsTransformIsort(input));
       if (output !== input) {
         if (options.fix) {
           await fs.promises.writeFile(filePath, output);
         }
-        consola.info(filePath);
+        consola.info(filePath, `${time.toFixed(0)} ms`);
         results.fixable++;
       } else {
-        consola.success(filePath);
+        consola.success(filePath, `${time.toFixed(0)} ms`);
         results.correct++;
       }
     } catch (e) {
@@ -76,6 +77,13 @@ async function collectFilesByGit(): Promise<string[]> {
     files = files.concat(result.stdout.split("\n").filter(Boolean));
   }
   return files;
+}
+
+function measureSync<T>(f: () => T): [T, number] {
+  const t0 = performance.now();
+  const y = f();
+  const t1 = performance.now();
+  return [y, t1 - t0];
 }
 
 async function main() {
