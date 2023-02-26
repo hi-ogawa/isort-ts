@@ -75,7 +75,7 @@ async function runCommand(
   // TODO
   // parallel in worker?
   // `Promise.all` is bad when there are too many files
-  // since `fs.promises.writeFile` would contend the resouce and modified files become momentarilly empty/purged.
+  // since `fs.promises.writeFile` would contend the resouce and modified files become momentarily empty/purged.
   for (const file of files) {
     await runTransform(file);
   }

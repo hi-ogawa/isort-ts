@@ -165,12 +165,14 @@ import "./z";
 import "./a";
 import "z";
 import { D, C, b, a } from "a";
+import "virtual:uno.css";
 import "process";
 import "node:process";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
       "import \\"node:process\\";
       import \\"process\\";
+      import \\"virtual:uno.css\\";
       import { C, D, a, b } from \\"a\\";
       import \\"z\\";
       import \\"./a\\";

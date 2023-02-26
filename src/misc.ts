@@ -22,7 +22,13 @@ interface IsortOptions {
 
 // TODO: configurable
 export const DEFAULT_OPTIONS: IsortOptions = {
-  isortOrder: [NODE_BUILTIN_RE, /^[^./]/, /[^./]/],
+  // prettier-ignore
+  isortOrder: [      // examples
+    NODE_BUILTIN_RE, // node:process, process
+    /^.*:/,          // virtual:uno.css
+    /^[^./]/,        // any-external
+    /[^./]/,         // ./any-local
+  ],
   isortSpecifiers: true,
   isortCaseInsensitive: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
