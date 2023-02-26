@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@hiogawa/isort-ts': 1.0.0-pre.10
   '@hiogawa/utils': ^1.0.3
   '@tsconfig/strictest': ^1.0.2
   '@types/lodash': ^4.14.191
@@ -8,6 +9,8 @@ specifiers:
   '@types/prettier': ^2.7.2
   cac: ^6.7.14
   consola: ^2.15.3
+  esbuild: ^0.17.10
+  esbuild-register: ^3.4.2
   lodash: ^4.17.21
   npm-run-all: ^4.1.5
   prettier: ^2.8.3
@@ -21,11 +24,14 @@ dependencies:
   lodash: 4.17.21
 
 devDependencies:
+  '@hiogawa/isort-ts': 1.0.0-pre.10_silln3pw57har7jydmecgzoypa
   '@hiogawa/utils': 1.0.3
   '@tsconfig/strictest': 1.0.2
   '@types/lodash': 4.14.191
   '@types/node': 18.14.1
   '@types/prettier': 2.7.2
+  esbuild: 0.17.10
+  esbuild-register: 3.4.2_esbuild@0.17.10
   npm-run-all: 4.1.5
   prettier: 2.8.4
   tsup: 6.6.3_typescript@4.9.5
@@ -430,6 +436,20 @@ packages:
     dev: true
     optional: true
 
+  /@hiogawa/isort-ts/1.0.0-pre.10_silln3pw57har7jydmecgzoypa:
+    resolution: {integrity: sha512-KpPu5tT/y/Ha+BZV7UldZ2QiYpStMx3iPVW67G3AURHbTdjepMjAYsaNo3IkMdoALJ3/a2Dwvp7Me8OOahr98w==}
+    hasBin: true
+    peerDependencies:
+      prettier: '*'
+      typescript: '*'
+    dependencies:
+      cac: 6.7.14
+      consola: 2.15.3
+      lodash: 4.17.21
+      prettier: 2.8.4
+      typescript: 4.9.5
+    dev: true
+
   /@hiogawa/utils/1.0.3:
     resolution: {integrity: sha512-qS3gAjVBhbeLedvcd+qZ4dMz3yVVRYHN0GllSsRScB2JAnvcUDmcwqbJmNmBjAIqqkOU4x5ng9L3bI9c7LISEg==}
     dev: true
@@ -695,7 +715,6 @@ packages:
 
   /consola/2.15.3:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
-    dev: false
 
   /cross-spawn/6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
@@ -825,6 +844,17 @@ packages:
       is-callable: 1.2.7
       is-date-object: 1.0.5
       is-symbol: 1.0.4
+    dev: true
+
+  /esbuild-register/3.4.2_esbuild@0.17.10:
+    resolution: {integrity: sha512-kG/XyTDyz6+YDuyfB9ZoSIOOmgyFCH+xPRtsCa8W85HLRV5Csp+o3jWVbOSHgSLfyLc5DmP+KFDNwty4mEjC+Q==}
+    peerDependencies:
+      esbuild: '>=0.12 <1'
+    dependencies:
+      debug: 4.3.4
+      esbuild: 0.17.10
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /esbuild/0.16.17:
@@ -1299,7 +1329,6 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: false
 
   /loupe/2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
