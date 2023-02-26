@@ -72,7 +72,10 @@ async function runCommand(
     }
   }
 
-  await Promise.all(files.map((v) => runTransform(v)));
+  // TODO: parallel in worker?
+  for (const file of files) {
+    await runTransform(file);
+  }
 
   if (options.cache) {
     await lruCache.store(CACHE_PATH);
