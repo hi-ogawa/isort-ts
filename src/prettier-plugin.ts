@@ -6,7 +6,10 @@ export const prettierPlugin: prettier.Plugin = {
   parsers: {
     typescript: {
       ...parserTypescript.parsers.typescript,
-      preprocess: tsTransformIsort,
+      // TODO: options
+      preprocess: (text, _options) => {
+        return tsTransformIsort(text);
+      },
     },
   },
 };

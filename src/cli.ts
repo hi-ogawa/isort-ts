@@ -24,7 +24,11 @@ cli
 
 async function runCommand(
   files: string[],
-  options: { fix: boolean; git: boolean; cache: boolean }
+  options: {
+    fix?: boolean;
+    git?: boolean;
+    cache?: boolean;
+  }
 ) {
   if (options.git) {
     files = files.concat(await collectFilesByGit());

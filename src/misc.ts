@@ -13,8 +13,9 @@ const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
 );
 
-interface IsortOptions {
+export interface IsortOptions {
   isortOrder: RegExp[];
+  // TODO: isortIgnoreMemberSort, isortIgnoreDeclarationSort, isortIgnoreCase
   isortSpecifiers: boolean;
   isortCaseInsensitive: boolean;
   isortIgnoreComments: string[];
