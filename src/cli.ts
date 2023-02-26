@@ -19,7 +19,7 @@ cli
   .command("[...files]", "check import order")
   .option("--fix", "apply sorting in-place")
   .option("--git", "collect files based on git")
-  .option("--cache", "enable caching (TODO)")
+  .option("--cache", "enable caching")
   .action(runCommand);
 
 async function runCommand(
