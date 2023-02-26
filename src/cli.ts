@@ -8,12 +8,14 @@ import { promisify } from "node:util";
 import { tinyassert } from "@hiogawa/utils";
 import { cac } from "cac";
 import consola from "consola";
+import { version } from "../package.json";
 import { tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
 cli
   .help()
+  .version(version)
   .command("[...files]", "check import order")
   .option("--fix", "apply sorting in-place")
   .option("--git", "collect files based on git")
@@ -102,7 +104,7 @@ async function runCommand(
 // each entry is 44 bytes (based encoded 256 bits = 32 bytes), so maximum is around 4MB
 // practically it should be reasonable to hard-code this.
 const CACHE_MAX_SIZE = 100_000;
-const CACHE_PATH = "node_modules/.cache/@hiogawa/isort-ts/.cache-v1"; // TODO: configurable
+const CACHE_PATH = `node_modules/.cache/@hiogawa/isort-ts/.cache-v${version}`; // TODO: configurable
 
 export class LruCacheSet<I, V> {
   private cached = new Set<string>();
