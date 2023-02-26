@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.0.0-pre.10",
+  "version": "1.0.0-pre.11",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
