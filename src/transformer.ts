@@ -3,7 +3,8 @@ import { range, sortBy } from "lodash";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, groupNeighborBy } from "./misc";
 
-// minimum parse data to allow sorting afterward
+// transformer only collects minimal AST data to allow sorting solely based on string afterward
+
 interface ImportDeclarationInfo {
   start: number;
   end: number;
@@ -85,6 +86,7 @@ function getTrivia(node: ts.Node): string {
 // ts transformer driver
 //
 
+// export for testing
 export function tsAnalyze(code: string) {
   const wrapper = new TransformerWrapper();
   const result = ts.transpileModule(code, {
@@ -96,6 +98,7 @@ export function tsAnalyze(code: string) {
     },
   });
   if (result.diagnostics && result.diagnostics?.length > 0) {
+    // TODO: display error position?
     throw new Error("isort-ts parse error");
   }
   return wrapper.result;
@@ -105,6 +108,7 @@ export function tsAnalyze(code: string) {
 // codemod
 //
 
+// TODO: options
 export function tsTransformIsort(code: string): string {
   const groups = tsAnalyze(code);
   for (const group of groups) {
