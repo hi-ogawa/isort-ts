@@ -41,7 +41,10 @@ async function runCommand(
     files = files.concat(await collectFilesByGit());
   }
 
-  // TOOD: show help when files empty?
+  if (files.length === 0) {
+    cli.outputHelp();
+    return;
+  }
 
   const results = {
     fixable: 0,
