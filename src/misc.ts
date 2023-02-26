@@ -15,13 +15,12 @@ const NODE_BUILTIN_RE = new RegExp(
 
 export interface IsortOptions {
   isortOrder: RegExp[];
-  // TODO: isortIgnoreMemberSort, isortIgnoreDeclarationSort, isortIgnoreCase
-  isortSpecifiers: boolean;
-  isortCaseInsensitive: boolean;
+  isortIgnoreDeclarationSort: boolean;
+  isortIgnoreMemberSort: boolean;
+  isortIgnoreCase: boolean;
   isortIgnoreComments: string[];
 }
 
-// TODO: configurable
 export const DEFAULT_OPTIONS: IsortOptions = {
   // prettier-ignore
   isortOrder: [      // examples
@@ -30,8 +29,9 @@ export const DEFAULT_OPTIONS: IsortOptions = {
     /^[^./]/,        // any-external
     /[^./]/,         // ./any-local
   ],
-  isortSpecifiers: true,
-  isortCaseInsensitive: false,
+  isortIgnoreDeclarationSort: false,
+  isortIgnoreMemberSort: false,
+  isortIgnoreCase: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
 

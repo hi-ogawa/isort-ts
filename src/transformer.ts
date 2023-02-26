@@ -38,14 +38,16 @@ class TransformIsort {
   run(code: string): string {
     const groups = this.analyze(code);
     for (const group of groups) {
-      if (this.options.isortSpecifiers) {
+      if (!this.options.isortIgnoreMemberSort) {
         for (const decl of group) {
           if (decl.specifiers) {
             code = this.sortImportSpecifiers(code, decl.specifiers);
           }
         }
       }
-      code = this.sortImportDeclarations(code, group);
+      if (!this.options.isortIgnoreDeclarationSort) {
+        code = this.sortImportDeclarations(code, group);
+      }
     }
     return code;
   }
@@ -86,16 +88,14 @@ class TransformIsort {
       (node) =>
         this.options.isortOrder.findIndex((re) => node.source.match(re)),
       (node) =>
-        this.options.isortCaseInsensitive
-          ? node.source.toLowerCase()
-          : node.source
+        this.options.isortIgnoreCase ? node.source.toLowerCase() : node.source
     );
     return replaceSortedNodes(code, nodes, sorted);
   }
 
   sortImportSpecifiers(code: string, nodes: ImportSpecifierInfo[]): string {
     const sorted = sortBy(nodes, (node) =>
-      this.options.isortCaseInsensitive ? node.name.toLowerCase() : node.name
+      this.options.isortIgnoreCase ? node.name.toLowerCase() : node.name
     );
     return replaceSortedNodes(code, nodes, sorted);
   }
