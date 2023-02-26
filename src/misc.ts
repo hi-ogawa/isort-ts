@@ -15,12 +15,14 @@ const NODE_BUILTIN_RE = new RegExp(
 
 export interface IsortOptions {
   isortOrder: RegExp[];
-  isortIgnoreDeclarationSort: boolean;
-  isortIgnoreMemberSort: boolean;
-  isortIgnoreCase: boolean;
+  isortIgnoreDeclarationSort?: boolean;
+  isortIgnoreMemberSort?: boolean;
+  isortIgnoreCase?: boolean;
   isortIgnoreComments: string[];
 }
 
+// TODO: test with non-default options
+// TODO: make `isortOrder` and `isortIgnoreComments` configurable
 export const DEFAULT_OPTIONS: IsortOptions = {
   // prettier-ignore
   isortOrder: [      // examples

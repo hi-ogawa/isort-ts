@@ -9,6 +9,7 @@ import { tinyassert } from "@hiogawa/utils";
 import { cac } from "cac";
 import consola from "consola";
 import { version } from "../package.json";
+import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
@@ -20,6 +21,9 @@ cli
   .option("--fix", "apply sorting in-place")
   .option("--git", "collect files based on git")
   .option("--cache", "enable caching")
+  .option("--isortIgnoreDeclarationSort", "not sort import declarations")
+  .option("--isortIgnoreMemberSort", "not sort import specifiers")
+  .option("--isortIgnoreCase", "sort case insensitive")
   .action(runCommand);
 
 async function runCommand(
@@ -28,11 +32,16 @@ async function runCommand(
     fix?: boolean;
     git?: boolean;
     cache?: boolean;
+    isortIgnoreDeclarationSort?: boolean;
+    isortIgnoreMemberSort?: boolean;
+    isortIgnoreCase?: boolean;
   }
 ) {
   if (options.git) {
     files = files.concat(await collectFilesByGit());
   }
+
+  // TOOD: show help when files empty?
 
   const results = {
     fixable: 0,
@@ -40,10 +49,18 @@ async function runCommand(
     error: 0,
   };
 
+  const isortOptions: IsortOptions = {
+    ...DEFAULT_OPTIONS,
+    isortIgnoreCase: options.isortIgnoreCase,
+    isortIgnoreDeclarationSort: options.isortIgnoreDeclarationSort,
+    isortIgnoreMemberSort: options.isortIgnoreMemberSort,
+  };
+  const isortOptionsString = JSON.stringify(isortOptions);
+
   const lruCache = new LruCacheSet({
-    hashFn: (input: string) => hashString(input), // TODO: hash options
+    hashFn: (input: string) => hashString(isortOptionsString + "@" + input),
     cachedFn: (input: string) => {
-      const output = tsTransformIsort(input);
+      const output = tsTransformIsort(input, isortOptions);
       return { ok: input === output, output };
     },
   });
