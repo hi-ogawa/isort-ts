@@ -36,7 +36,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@hiogawa/isort-ts": "1.0.0-pre.10",
+    "@hiogawa/isort-ts": "1.0.0-pre.11",
     "@hiogawa/utils": "^1.0.3",
     "@tsconfig/strictest": "^1.0.2",
     "@types/lodash": "^4.14.191",
