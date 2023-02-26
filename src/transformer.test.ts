@@ -164,14 +164,14 @@ some-random # stuff
 import "./z";
 import "./a";
 import "z";
-import "a";
+import { D, C, b, a } from "a";
 import "process";
 import "node:process";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
       "import \\"node:process\\";
       import \\"process\\";
-      import \\"a\\";
+      import { C, D, a, b } from \\"a\\";
       import \\"z\\";
       import \\"./a\\";
       import \\"./z\\";

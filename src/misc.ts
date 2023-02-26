@@ -1,10 +1,17 @@
 import { builtinModules } from "node:module";
 
+//
+// options
+//
+
 const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
 );
 
-// cf. https://github.com/trivago/prettier-plugin-sort-imports/blob/89d66f706423e44f29d525529af37e5d41a74133/src/index.ts#L9
+// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+// https://eslint.org/docs/latest/rules/sort-imports
+// https://github.com/trivago/prettier-plugin-sort-imports/blob/89d66f706423e44f29d525529af37e5d41a74133/src/index.ts#L9
+
 interface IsortOptions {
   isortOrder: RegExp[];
   isortSpecifiers: boolean;
@@ -16,9 +23,13 @@ interface IsortOptions {
 export const DEFAULT_OPTIONS: IsortOptions = {
   isortOrder: [NODE_BUILTIN_RE, /^[^./]/, /[^./]/],
   isortSpecifiers: true,
-  isortCaseInsensitive: true,
+  isortCaseInsensitive: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
+
+//
+// utils
+//
 
 export function groupNeighborBy<T, K>(ls: T[], f: (x: T) => K): [K, T[]][] {
   if (ls.length === 0) {
