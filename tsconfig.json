@@ -2,6 +2,7 @@
   "extends": "@tsconfig/strictest/tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
+    "resolveJsonModule": true,
     "exactOptionalPropertyTypes": false,
     "noEmit": true,
     "module": "ESNext",
