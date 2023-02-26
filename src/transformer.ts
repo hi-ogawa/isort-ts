@@ -1,9 +1,9 @@
 import { tinyassert } from "@hiogawa/utils";
 import { range, sortBy } from "lodash";
 import ts from "typescript";
-import { DEFAULT_OPTIONS, groupNeighborBy } from "./misc";
+import { DEFAULT_OPTIONS, IsortOptions, groupNeighborBy } from "./misc";
 
-// transformer only collects minimal AST data to allow sorting solely based on string afterward
+// ts transformer only collects minimal AST data to allow sorting solely based on string afterward
 
 interface ImportDeclarationInfo {
   start: number;
@@ -18,28 +18,98 @@ interface ImportSpecifierInfo {
   name: string;
 }
 
-// cf. https://gist.github.com/hi-ogawa/cb338b4765d25321b120b2a47819abcc
-class TransformerWrapper {
-  result: ImportDeclarationInfo[][] = [];
-
-  getTransformer =
-    (): ts.TransformerFactory<ts.SourceFile> =>
-    (_ctx: ts.TransformationContext) =>
-    (sourceFile: ts.SourceFile) => {
-      // we don't have to visit all AST recursively
-      this.result = extraceImportDeclaration(sourceFile);
-      return sourceFile;
-    };
+export function tsTransformIsort(
+  code: string,
+  options: IsortOptions = DEFAULT_OPTIONS
+): string {
+  return new TransformIsort(options).run(code);
 }
 
-function extraceImportDeclaration(
-  node: ts.SourceFile
+export function tsAnalyze(
+  code: string,
+  options: IsortOptions = DEFAULT_OPTIONS
+): ImportDeclarationInfo[][] {
+  return new TransformIsort(options).analyze(code);
+}
+
+class TransformIsort {
+  constructor(private options: IsortOptions) {}
+
+  run(code: string): string {
+    const groups = this.analyze(code);
+    for (const group of groups) {
+      if (!this.options.isortIgnoreMemberSort) {
+        for (const decl of group) {
+          if (decl.specifiers) {
+            code = this.sortImportSpecifiers(code, decl.specifiers);
+          }
+        }
+      }
+      if (!this.options.isortIgnoreDeclarationSort) {
+        code = this.sortImportDeclarations(code, group);
+      }
+    }
+    return code;
+  }
+
+  analyze(code: string): ImportDeclarationInfo[][] {
+    let result: ImportDeclarationInfo[][] = [];
+
+    // cf. https://gist.github.com/hi-ogawa/cb338b4765d25321b120b2a47819abcc
+
+    // define typescript transformer
+    const transformer: ts.TransformerFactory<ts.SourceFile> =
+      (_ctx: ts.TransformationContext) => (sourceFile: ts.SourceFile) => {
+        // we don't have to visit all AST recursively
+        result = extractImportDeclaration(sourceFile, this.options);
+        return sourceFile;
+      };
+
+    // run transpilation with transformer
+    const transpiled = ts.transpileModule(code, {
+      compilerOptions: {},
+      fileName: "__dummy.tsx",
+      reportDiagnostics: true,
+      transformers: {
+        before: [transformer],
+      },
+    });
+    if (transpiled.diagnostics && transpiled.diagnostics?.length > 0) {
+      // TODO: display error position etc..?
+      throw new Error("isort-ts parse error");
+    }
+
+    return result;
+  }
+
+  sortImportDeclarations(code: string, nodes: ImportDeclarationInfo[]): string {
+    const sorted = sortBy(
+      nodes,
+      (node) =>
+        this.options.isortOrder.findIndex((re) => node.source.match(re)),
+      (node) =>
+        this.options.isortIgnoreCase ? node.source.toLowerCase() : node.source
+    );
+    return replaceSortedNodes(code, nodes, sorted);
+  }
+
+  sortImportSpecifiers(code: string, nodes: ImportSpecifierInfo[]): string {
+    const sorted = sortBy(nodes, (node) =>
+      this.options.isortIgnoreCase ? node.name.toLowerCase() : node.name
+    );
+    return replaceSortedNodes(code, nodes, sorted);
+  }
+}
+
+function extractImportDeclaration(
+  node: ts.SourceFile,
+  options: IsortOptions
 ): ImportDeclarationInfo[][] {
   const groups: [boolean, ts.Statement[]][] = groupNeighborBy(
     [...node.statements],
     (stmt) =>
       ts.isImportDeclaration(stmt) &&
-      !DEFAULT_OPTIONS.isortIgnoreComments.some((comment) =>
+      !options.isortIgnoreComments.some((comment) =>
         getTrivia(stmt).includes(comment)
       )
   );
@@ -80,74 +150,6 @@ function extraceImportSpecifier(
 
 function getTrivia(node: ts.Node): string {
   return node.getFullText().slice(0, node.getLeadingTriviaWidth());
-}
-
-//
-// ts transformer driver
-//
-
-// export for testing
-export function tsAnalyze(code: string) {
-  const wrapper = new TransformerWrapper();
-  const result = ts.transpileModule(code, {
-    compilerOptions: {},
-    fileName: "__dummy.tsx",
-    reportDiagnostics: true,
-    transformers: {
-      before: [wrapper.getTransformer()],
-    },
-  });
-  if (result.diagnostics && result.diagnostics?.length > 0) {
-    // TODO: display error position?
-    throw new Error("isort-ts parse error");
-  }
-  return wrapper.result;
-}
-
-//
-// codemod
-//
-
-// TODO: options
-export function tsTransformIsort(code: string): string {
-  const groups = tsAnalyze(code);
-  for (const group of groups) {
-    if (DEFAULT_OPTIONS.isortSpecifiers) {
-      for (const decl of group) {
-        if (decl.specifiers) {
-          code = sortImportSpecifiers(code, decl.specifiers);
-        }
-      }
-    }
-    code = sortImportDeclarations(code, group);
-  }
-  return code;
-}
-
-function sortImportDeclarations(
-  code: string,
-  nodes: ImportDeclarationInfo[]
-): string {
-  const sorted = sortBy(
-    nodes,
-    (node) =>
-      DEFAULT_OPTIONS.isortOrder.findIndex((re) => node.source.match(re)),
-    (node) =>
-      DEFAULT_OPTIONS.isortCaseInsensitive
-        ? node.source.toLowerCase()
-        : node.source
-  );
-  return replaceSortedNodes(code, nodes, sorted);
-}
-
-function sortImportSpecifiers(
-  code: string,
-  nodes: ImportSpecifierInfo[]
-): string {
-  const sorted = sortBy(nodes, (node) =>
-    DEFAULT_OPTIONS.isortCaseInsensitive ? node.name.toLowerCase() : node.name
-  );
-  return replaceSortedNodes(code, nodes, sorted);
 }
 
 // keep existing trivia fixed since this seems the easiest way to handle new lines naturally

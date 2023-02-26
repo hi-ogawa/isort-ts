@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@hiogawa/isort-ts': 1.0.0-pre.10
+  '@hiogawa/isort-ts': 1.0.0-pre.11
   '@hiogawa/utils': ^1.0.3
   '@tsconfig/strictest': ^1.0.2
   '@types/lodash': ^4.14.191
@@ -24,7 +24,7 @@ dependencies:
   lodash: 4.17.21
 
 devDependencies:
-  '@hiogawa/isort-ts': 1.0.0-pre.10_silln3pw57har7jydmecgzoypa
+  '@hiogawa/isort-ts': 1.0.0-pre.11_silln3pw57har7jydmecgzoypa
   '@hiogawa/utils': 1.0.3
   '@tsconfig/strictest': 1.0.2
   '@types/lodash': 4.14.191
@@ -436,8 +436,8 @@ packages:
     dev: true
     optional: true
 
-  /@hiogawa/isort-ts/1.0.0-pre.10_silln3pw57har7jydmecgzoypa:
-    resolution: {integrity: sha512-KpPu5tT/y/Ha+BZV7UldZ2QiYpStMx3iPVW67G3AURHbTdjepMjAYsaNo3IkMdoALJ3/a2Dwvp7Me8OOahr98w==}
+  /@hiogawa/isort-ts/1.0.0-pre.11_silln3pw57har7jydmecgzoypa:
+    resolution: {integrity: sha512-55Id9ENzKjWfm89wuiLMvAflKm+UggLjPHqk99kV/XYYQsPhM81ig1PN/1nCGym3BK811NLhlKbpdBFyPKU1NA==}
     hasBin: true
     peerDependencies:
       prettier: '*'
