@@ -8,35 +8,36 @@ import { promisify } from "node:util";
 import { tinyassert } from "@hiogawa/utils";
 import { cac } from "cac";
 import consola from "consola";
+import { z } from "zod";
 import { version } from "../package.json";
-import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
+import {
+  DEFAULT_OPTIONS,
+  IsortOptions,
+  Z_USER_ISORT_OPTIONS,
+  cacOptionsFromZod,
+} from "./misc";
 import { tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
-cli
+const cliCommand = cli
   .help()
   .version(version)
   .command("[...files]", "check import order")
-  .option("--fix", "apply sorting in-place")
-  .option("--git", "collect files based on git")
-  .option("--cache", "enable caching")
-  .option("--isortIgnoreDeclarationSort", "not sort import declarations")
-  .option("--isortIgnoreMemberSort", "not sort import specifiers")
-  .option("--isortIgnoreCase", "sort case insensitive")
   .action(runCommand);
 
-async function runCommand(
-  files: string[],
-  options: {
-    fix?: boolean;
-    git?: boolean;
-    cache?: boolean;
-    isortIgnoreDeclarationSort?: boolean;
-    isortIgnoreMemberSort?: boolean;
-    isortIgnoreCase?: boolean;
-  }
-) {
+const Z_CLI_OPTIONS = z.object({
+  fix: z.boolean().optional().describe("apply sorting in-place"),
+  git: z.boolean().optional().describe("collect files based on git"),
+  cache: z.boolean().optional().describe("enable caching"),
+});
+
+cacOptionsFromZod(cliCommand, Z_CLI_OPTIONS);
+cacOptionsFromZod(cliCommand, Z_USER_ISORT_OPTIONS);
+
+async function runCommand(files: string[], rawOptions: unknown) {
+  const options = Z_CLI_OPTIONS.parse(rawOptions);
+
   if (options.git) {
     files = files.concat(await collectFilesByGit());
   }
@@ -54,9 +55,7 @@ async function runCommand(
 
   const isortOptions: IsortOptions = {
     ...DEFAULT_OPTIONS,
-    isortIgnoreCase: options.isortIgnoreCase,
-    isortIgnoreDeclarationSort: options.isortIgnoreDeclarationSort,
-    isortIgnoreMemberSort: options.isortIgnoreMemberSort,
+    ...Z_USER_ISORT_OPTIONS.parse(rawOptions),
   };
   const isortOptionsString = JSON.stringify(isortOptions);
 

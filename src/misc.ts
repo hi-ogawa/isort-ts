@@ -1,4 +1,5 @@
 import { builtinModules } from "node:module";
+import { z } from "zod";
 
 //
 // options
@@ -13,13 +14,10 @@ const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
 );
 
-export interface IsortOptions {
+export type IsortOptions = {
   isortOrder: RegExp[];
-  isortIgnoreDeclarationSort?: boolean;
-  isortIgnoreMemberSort?: boolean;
-  isortIgnoreCase?: boolean;
   isortIgnoreComments: string[];
-}
+} & UserIsortOptions;
 
 // TODO: test with non-default options
 // TODO: make `isortOrder` and `isortIgnoreComments` configurable
@@ -36,6 +34,28 @@ export const DEFAULT_OPTIONS: IsortOptions = {
   isortIgnoreCase: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
+
+// prettier-ignore
+export const Z_USER_ISORT_OPTIONS = z.object({
+  isortIgnoreDeclarationSort: z.boolean().optional().describe("disable sorting import declarations"),
+  isortIgnoreMemberSort: z.boolean().optional().describe("disable sorting import specifiers"),
+  isortIgnoreCase: z.boolean().optional().describe("sort case insensitive"),
+});
+
+type UserIsortOptions = z.infer<typeof Z_USER_ISORT_OPTIONS>;
+
+//
+// zod
+//
+
+export function cacOptionsFromZod<T extends z.ZodObject<z.ZodRawShape>>(
+  command: { option: (option: string, description: string) => void },
+  schema: T
+) {
+  for (const [k, v] of Object.entries(schema.shape)) {
+    command.option(`--${k}`, v.description ?? "");
+  }
+}
 
 //
 // utils
