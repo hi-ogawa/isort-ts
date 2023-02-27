@@ -33,14 +33,12 @@
   },
   "dependencies": {
     "cac": "^6.7.14",
-    "consola": "^2.15.3",
-    "lodash": "^4.17.21"
+    "consola": "^2.15.3"
   },
   "devDependencies": {
     "@hiogawa/isort-ts": "1.0.0-pre.11",
-    "@hiogawa/utils": "^1.0.3",
+    "@hiogawa/utils": "^1.1.1",
     "@tsconfig/strictest": "^1.0.2",
-    "@types/lodash": "^4.14.191",
     "@types/node": "^18.14.1",
     "@types/prettier": "^2.7.2",
     "esbuild": "^0.17.10",
