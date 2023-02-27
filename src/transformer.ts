@@ -1,5 +1,4 @@
-import { tinyassert } from "@hiogawa/utils";
-import { range, sortBy } from "lodash";
+import { range, sortBy, tinyassert } from "@hiogawa/utils";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, IsortOptions, groupNeighborBy } from "./misc";
 

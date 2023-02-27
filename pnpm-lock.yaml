@@ -2,16 +2,14 @@ lockfileVersion: 5.4
 
 specifiers:
   '@hiogawa/isort-ts': 1.0.0-pre.11
-  '@hiogawa/utils': ^1.0.3
+  '@hiogawa/utils': ^1.1.1
   '@tsconfig/strictest': ^1.0.2
-  '@types/lodash': ^4.14.191
   '@types/node': ^18.14.1
   '@types/prettier': ^2.7.2
   cac: ^6.7.14
   consola: ^2.15.3
   esbuild: ^0.17.10
   esbuild-register: ^3.4.2
-  lodash: ^4.17.21
   npm-run-all: ^4.1.5
   prettier: ^2.8.3
   tsup: ^6.6.3
@@ -21,13 +19,11 @@ specifiers:
 dependencies:
   cac: 6.7.14
   consola: 2.15.3
-  lodash: 4.17.21
 
 devDependencies:
   '@hiogawa/isort-ts': 1.0.0-pre.11_silln3pw57har7jydmecgzoypa
-  '@hiogawa/utils': 1.0.3
+  '@hiogawa/utils': 1.1.1
   '@tsconfig/strictest': 1.0.2
-  '@types/lodash': 4.14.191
   '@types/node': 18.14.1
   '@types/prettier': 2.7.2
   esbuild: 0.17.10
@@ -450,8 +446,8 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /@hiogawa/utils/1.0.3:
-    resolution: {integrity: sha512-qS3gAjVBhbeLedvcd+qZ4dMz3yVVRYHN0GllSsRScB2JAnvcUDmcwqbJmNmBjAIqqkOU4x5ng9L3bI9c7LISEg==}
+  /@hiogawa/utils/1.1.1:
+    resolution: {integrity: sha512-VB55/fO1GejRXsLNFm/VnyFnmrxn1yMNDvP1gED4V2kHW36cQ0SCcKF9smoIN8N/adW6fVb7VLBd6ieRr2omBA==}
     dev: true
 
   /@nodelib/fs.scandir/2.1.5:
@@ -487,10 +483,6 @@ packages:
 
   /@types/chai/4.3.4:
     resolution: {integrity: sha512-KnRanxnpfpjUTqTCXslZSEdLfXExwgNxYPdiO2WGUj8+HDjFi8R3k5RVKPeSCzLjCcshCAtVO2QBbVuAV4kTnw==}
-    dev: true
-
-  /@types/lodash/4.14.191:
-    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: true
 
   /@types/node/18.14.1:
@@ -1329,6 +1321,7 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: true
 
   /loupe/2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
