@@ -1,4 +1,3 @@
-import assert from "node:assert";
 import { tinyassert, wrapError } from "@hiogawa/utils";
 import { describe, expect, it } from "vitest";
 import { ParseError, tsAnalyze, tsTransformIsort } from "./transformer";
