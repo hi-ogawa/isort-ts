@@ -1,5 +1,6 @@
+import assert from "node:assert";
 import { describe, expect, it } from "vitest";
-import { tsAnalyze, tsTransformIsort } from "./transformer";
+import { ParseError, tsAnalyze, tsTransformIsort } from "./transformer";
 
 describe("tsAnalyze", () => {
   it("comment", () => {
@@ -154,8 +155,26 @@ import "a";
     const input = `\
 some-random # stuff
 `;
-    expect(() => tsTransformIsort(input)).toThrowErrorMatchingInlineSnapshot(
-      '"isort-ts parse error"'
+    assert.throws(
+      () => tsTransformIsort(input),
+      (e) => {
+        assert.ok(e instanceof ParseError);
+        expect(e.getDetails()).toMatchInlineSnapshot(`
+          [
+            {
+              "column": 12,
+              "line": 1,
+              "message": "Invalid character.",
+            },
+            {
+              "column": 14,
+              "line": 1,
+              "message": "';' expected.",
+            },
+          ]
+        `);
+        return true;
+      }
     );
   });
 

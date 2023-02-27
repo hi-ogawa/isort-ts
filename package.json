@@ -17,6 +17,7 @@
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
     "dev-isort": "node -r esbuild-register ./src/cli.ts",
+    "dev-isort-prettier": "prettier --write . --plugin=./dist/index.js",
     "dev-isort-fix": "pnpm dev-isort --git --fix",
     "dev-isort-check": "pnpm dev-isort --git",
     "build": "tsup",

@@ -10,7 +10,7 @@ import { cac } from "cac";
 import consola from "consola";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
-import { tsTransformIsort } from "./transformer";
+import { ParseError, tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
@@ -93,7 +93,18 @@ async function runCommand(
         results.fixable++;
       }
     } catch (e) {
-      consola.error(filePath, e);
+      if (e instanceof ParseError) {
+        const details = e.getDetails();
+        tinyassert(details.length > 0);
+        for (const detail of details) {
+          consola.error(
+            `${filePath}:${detail.line}:${detail.column}`,
+            detail.message
+          );
+        }
+      } else {
+        consola.error(filePath, e);
+      }
       results.error++;
     }
   }

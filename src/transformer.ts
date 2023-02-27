@@ -75,8 +75,7 @@ class TransformIsort {
       },
     });
     if (transpiled.diagnostics && transpiled.diagnostics?.length > 0) {
-      // TODO: display error position etc..?
-      throw new Error("isort-ts parse error");
+      throw new ParseError(code, transpiled.diagnostics);
     }
 
     return result;
@@ -180,4 +179,54 @@ function replaceSortedNodes(
     .map((range) => code.slice(...range))
     .join("");
   return result;
+}
+
+//
+// parse error
+//
+
+export class ParseError extends Error {
+  constructor(private input: string, private diagnostics: ts.Diagnostic[]) {
+    super("isort-ts parse error");
+  }
+
+  getDetails(): DiagnosticsInfo[] {
+    return this.diagnostics.map((d) => formatDiagnostic(this.input, d));
+  }
+}
+
+interface DiagnosticsInfo {
+  message?: string;
+  line: number;
+  column: number;
+}
+
+function formatDiagnostic(
+  input: string,
+  diagnostic: ts.Diagnostic
+): DiagnosticsInfo {
+  const { messageText, start } = diagnostic;
+  tinyassert(typeof start === "number");
+  const [line, column] = resolvePosition(input, start);
+  return {
+    message: typeof messageText === "string" ? messageText : undefined,
+    line,
+    column,
+  };
+}
+
+function resolvePosition(input: string, offset: number): [number, number] {
+  tinyassert(offset < input.length);
+
+  // TODO: support CRLF?
+  const acc = [0];
+  for (const s of input.split("\n")) {
+    acc.push(acc.at(-1)! + s.length + 1);
+  }
+
+  const line = acc.findIndex((s) => offset < s);
+  tinyassert(line > 0);
+  const column = offset - acc[line - 1]!;
+
+  return [line, column];
 }
