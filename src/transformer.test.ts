@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { tinyassert, wrapError } from "@hiogawa/utils";
 import { describe, expect, it } from "vitest";
 import { ParseError, tsAnalyze, tsTransformIsort } from "./transformer";
 
@@ -151,31 +152,48 @@ import "a";
     `);
   });
 
+  it("ts only syntax", () => {
+    const input = `\
+import "b";
+import "a";
+
+const f = async <T>(x: T) => x;
+`;
+    expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
+      "import \\"a\\";
+      import \\"b\\";
+
+      const f = async <T>(x: T) => x;
+      "
+    `);
+  });
+
   it("syntax-error", () => {
     const input = `\
 some-random # stuff
 `;
-    assert.throws(
-      () => tsTransformIsort(input),
-      (e) => {
-        assert.ok(e instanceof ParseError);
-        expect(e.getDetails()).toMatchInlineSnapshot(`
-          [
-            {
-              "column": 12,
-              "line": 1,
-              "message": "Invalid character.",
-            },
-            {
-              "column": 14,
-              "line": 1,
-              "message": "';' expected.",
-            },
-          ]
-        `);
-        return true;
+    const result = wrapError(() => tsTransformIsort(input));
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "ok": false,
+        "value": [Error: isort-ts parse error],
       }
-    );
+    `);
+    tinyassert(result.value instanceof ParseError);
+    expect(result.value.getDetails()).toMatchInlineSnapshot(`
+      [
+        {
+          "column": 12,
+          "line": 1,
+          "message": "Invalid character.",
+        },
+        {
+          "column": 14,
+          "line": 1,
+          "message": "';' expected.",
+        },
+      ]
+    `);
   });
 
   it("default-order", () => {

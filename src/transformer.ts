@@ -53,6 +53,15 @@ class TransformIsort {
   }
 
   analyze(code: string): ImportDeclarationInfo[][] {
+    // runs both in tsx and ts mode since `tsx` is not a super set of `ts`
+    // just like what prettier does in https://github.com/prettier/prettier/blob/bc098779c4e457b1454895973196cffb3b1cdedf/src/language-js/parse/typescript.js#L40-L45
+    try {
+      return this.analyzeInternal(code, true);
+    } catch {}
+    return this.analyzeInternal(code, false);
+  }
+
+  analyzeInternal(code: string, tsx: boolean): ImportDeclarationInfo[][] {
     let result: ImportDeclarationInfo[][] = [];
 
     // cf. https://gist.github.com/hi-ogawa/cb338b4765d25321b120b2a47819abcc
@@ -68,7 +77,7 @@ class TransformIsort {
     // run transpilation with transformer
     const transpiled = ts.transpileModule(code, {
       compilerOptions: {},
-      fileName: "__dummy.tsx",
+      fileName: tsx ? "__dummy.tsx" : "__dummy.ts",
       reportDiagnostics: true,
       transformers: {
         before: [transformer],
