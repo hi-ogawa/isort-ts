@@ -8,6 +8,11 @@ interface ImportDeclarationInfo {
   start: number;
   end: number;
   source: string;
+  clause?: ImportClauseInfo; // side effect import when undefined
+}
+
+interface ImportClauseInfo {
+  name?: string; // default name
   specifiers?: ImportSpecifierInfo[];
 }
 
@@ -39,8 +44,8 @@ class TransformIsort {
     for (const group of groups) {
       if (!this.options.isortIgnoreMemberSort) {
         for (const decl of group) {
-          if (decl.specifiers) {
-            code = this.sortImportSpecifiers(code, decl.specifiers);
+          if (decl.clause?.specifiers) {
+            code = this.sortImportSpecifiers(code, decl.clause.specifiers);
           }
         }
       }
@@ -92,6 +97,7 @@ class TransformIsort {
   sortImportDeclarations(code: string, nodes: ImportDeclarationInfo[]): string {
     const sorted = sortBy(
       nodes,
+      (node) => (node.clause ? 1 : 0), // side effect first
       (node) =>
         this.options.isortOrder.findIndex((re) => node.source.match(re)),
       (node) =>
@@ -128,11 +134,15 @@ function extractImportDeclaration(
     const resultGroup = statements.map((node) => {
       tinyassert(ts.isImportDeclaration(node));
       tinyassert(ts.isStringLiteral(node.moduleSpecifier));
+      node.importClause;
       const info: ImportDeclarationInfo = {
         start: node.getStart(),
         end: node.end,
         source: node.moduleSpecifier.text,
-        specifiers: extraceImportSpecifier(node),
+        clause: node.importClause && {
+          name: node.importClause.name?.text,
+          specifiers: extraceImportSpecifier(node),
+        },
       };
       return info;
     });
