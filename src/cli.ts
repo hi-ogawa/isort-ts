@@ -228,9 +228,9 @@ function hashString(input: string): string {
 const promisifyExec = promisify(exec);
 
 async function collectFilesByGit(): Promise<string[]> {
+  // fails when no-match but that's probably desired
   const COMMANDS = [
-    "git grep -l . '*.ts' '*.tsx'",
-    "git ls-files --others --exclude-standard '*.ts' '*.tsx'",
+    "git grep -l --untracked --exclude-standard . '*.ts' '*.tsx'",
   ];
   let files: string[] = [];
   for (const command of COMMANDS) {
