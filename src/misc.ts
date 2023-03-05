@@ -1,4 +1,5 @@
 import { builtinModules } from "node:module";
+import { z } from "zod";
 
 //
 // options
@@ -13,13 +14,9 @@ const NODE_BUILTIN_RE = new RegExp(
   "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
 );
 
-export interface IsortOptions {
+export type IsortOptions = {
   isortOrder: RegExp[];
-  isortIgnoreDeclarationSort?: boolean;
-  isortIgnoreMemberSort?: boolean;
-  isortIgnoreCase?: boolean;
-  isortIgnoreComments: string[];
-}
+} & UserIsortOptions;
 
 // TODO: test with non-default options
 // TODO: make `isortOrder` and `isortIgnoreComments` configurable
@@ -36,6 +33,20 @@ export const DEFAULT_OPTIONS: IsortOptions = {
   isortIgnoreCase: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
+
+// prettier-ignore
+export const Z_USER_ISORT_OPTIONS = z.object({
+  isortIgnoreDeclarationSort: z.boolean().optional(),
+  isortIgnoreMemberSort: z.boolean().optional(),
+  isortIgnoreCase: z.boolean().optional(),
+  isortIgnoreComments: z.preprocess(wrapArray, z.string().array()).optional(),
+});
+
+type UserIsortOptions = z.infer<typeof Z_USER_ISORT_OPTIONS>;
+
+function wrapArray(v: unknown): unknown[] {
+  return [v].flat(1);
+}
 
 //
 // utils
