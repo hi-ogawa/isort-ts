@@ -16,7 +16,7 @@ import {
   Z_USER_ISORT_OPTIONS,
   cacOptionsFromZod,
 } from "./misc";
-import { tsTransformIsort } from "./transformer";
+import { ParseError, tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
