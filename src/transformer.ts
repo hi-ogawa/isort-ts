@@ -1,5 +1,4 @@
-import { tinyassert } from "@hiogawa/utils";
-import { range, sortBy } from "lodash";
+import { range, sortBy, tinyassert } from "@hiogawa/utils";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, IsortOptions, groupNeighborBy } from "./misc";
 
@@ -9,6 +8,11 @@ interface ImportDeclarationInfo {
   start: number;
   end: number;
   source: string;
+  clause?: ImportClauseInfo; // side effect import when undefined
+}
+
+interface ImportClauseInfo {
+  name?: string; // default name
   specifiers?: ImportSpecifierInfo[];
 }
 
@@ -40,8 +44,8 @@ class TransformIsort {
     for (const group of groups) {
       if (!this.options.isortIgnoreMemberSort) {
         for (const decl of group) {
-          if (decl.specifiers) {
-            code = this.sortImportSpecifiers(code, decl.specifiers);
+          if (decl.clause?.specifiers) {
+            code = this.sortImportSpecifiers(code, decl.clause.specifiers);
           }
         }
       }
@@ -53,6 +57,15 @@ class TransformIsort {
   }
 
   analyze(code: string): ImportDeclarationInfo[][] {
+    // runs both in tsx and ts mode since `tsx` is not a super set of `ts`
+    // just like what prettier does in https://github.com/prettier/prettier/blob/bc098779c4e457b1454895973196cffb3b1cdedf/src/language-js/parse/typescript.js#L40-L45
+    try {
+      return this.analyzeInternal(code, true);
+    } catch {}
+    return this.analyzeInternal(code, false);
+  }
+
+  analyzeInternal(code: string, tsx: boolean): ImportDeclarationInfo[][] {
     let result: ImportDeclarationInfo[][] = [];
 
     // cf. https://gist.github.com/hi-ogawa/cb338b4765d25321b120b2a47819abcc
@@ -68,15 +81,14 @@ class TransformIsort {
     // run transpilation with transformer
     const transpiled = ts.transpileModule(code, {
       compilerOptions: {},
-      fileName: "__dummy.tsx",
+      fileName: tsx ? "__dummy.tsx" : "__dummy.ts",
       reportDiagnostics: true,
       transformers: {
         before: [transformer],
       },
     });
     if (transpiled.diagnostics && transpiled.diagnostics?.length > 0) {
-      // TODO: display error position etc..?
-      throw new Error("isort-ts parse error");
+      throw new ParseError(code, transpiled.diagnostics);
     }
 
     return result;
@@ -85,6 +97,7 @@ class TransformIsort {
   sortImportDeclarations(code: string, nodes: ImportDeclarationInfo[]): string {
     const sorted = sortBy(
       nodes,
+      (node) => (node.clause ? 1 : 0), // side effect first
       (node) =>
         this.options.isortOrder.findIndex((re) => node.source.match(re)),
       (node) =>
@@ -121,11 +134,15 @@ function extractImportDeclaration(
     const resultGroup = statements.map((node) => {
       tinyassert(ts.isImportDeclaration(node));
       tinyassert(ts.isStringLiteral(node.moduleSpecifier));
+      node.importClause;
       const info: ImportDeclarationInfo = {
         start: node.getStart(),
         end: node.end,
         source: node.moduleSpecifier.text,
-        specifiers: extraceImportSpecifier(node),
+        clause: node.importClause && {
+          name: node.importClause.name?.text,
+          specifiers: extraceImportSpecifier(node),
+        },
       };
       return info;
     });
@@ -180,4 +197,54 @@ function replaceSortedNodes(
     .map((range) => code.slice(...range))
     .join("");
   return result;
+}
+
+//
+// parse error
+//
+
+export class ParseError extends Error {
+  constructor(private input: string, private diagnostics: ts.Diagnostic[]) {
+    super("isort-ts parse error");
+  }
+
+  getDetails(): DiagnosticsInfo[] {
+    return this.diagnostics.map((d) => formatDiagnostic(this.input, d));
+  }
+}
+
+interface DiagnosticsInfo {
+  message?: string;
+  line: number;
+  column: number;
+}
+
+function formatDiagnostic(
+  input: string,
+  diagnostic: ts.Diagnostic
+): DiagnosticsInfo {
+  const { messageText, start } = diagnostic;
+  tinyassert(typeof start === "number");
+  const [line, column] = resolvePosition(input, start);
+  return {
+    message: typeof messageText === "string" ? messageText : undefined,
+    line,
+    column,
+  };
+}
+
+function resolvePosition(input: string, offset: number): [number, number] {
+  tinyassert(offset < input.length);
+
+  // TODO: support CRLF?
+  const acc = [0];
+  for (const s of input.split("\n")) {
+    acc.push(acc.at(-1)! + s.length + 1);
+  }
+
+  const line = acc.findIndex((s) => offset < s);
+  tinyassert(line > 0);
+  const column = offset - acc[line - 1]!;
+
+  return [line, column];
 }

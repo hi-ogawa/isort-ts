@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.0.0-pre.11",
+  "version": "1.0.0",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
@@ -17,6 +17,7 @@
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
     "dev-isort": "node -r esbuild-register ./src/cli.ts",
+    "dev-isort-prettier": "prettier --write . --plugin=./dist/index.js",
     "dev-isort-fix": "pnpm dev-isort --git --fix",
     "dev-isort-check": "pnpm dev-isort --git",
     "build": "tsup",
@@ -37,10 +38,10 @@
     "zod": "^3.20.6"
   },
   "devDependencies": {
-    "@hiogawa/isort-ts": "1.0.0-pre.11",
-    "@hiogawa/utils": "^1.0.3",
+    "--isort-ts": "npm:@hiogawa/isort-ts@1.0.0-pre.11",
+    "@changesets/cli": "^2.26.0",
+    "@hiogawa/utils": "^1.1.1",
     "@tsconfig/strictest": "^1.0.2",
-    "@types/lodash": "^4.14.191",
     "@types/node": "^18.14.1",
     "@types/prettier": "^2.7.2",
     "esbuild": "^0.17.10",

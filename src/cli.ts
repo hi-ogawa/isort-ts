@@ -92,7 +92,18 @@ async function runCommand(files: string[], rawOptions: unknown) {
         results.fixable++;
       }
     } catch (e) {
-      consola.error(filePath, e);
+      if (e instanceof ParseError) {
+        const details = e.getDetails();
+        tinyassert(details.length > 0);
+        for (const detail of details) {
+          consola.error(
+            `${filePath}:${detail.line}:${detail.column}`,
+            detail.message
+          );
+        }
+      } else {
+        consola.error(filePath, e);
+      }
       results.error++;
     }
   }
