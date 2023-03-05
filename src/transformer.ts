@@ -122,7 +122,7 @@ function extractImportDeclaration(
     [...node.statements],
     (stmt) =>
       ts.isImportDeclaration(stmt) &&
-      !options.isortIgnoreComments.some((comment) =>
+      !options.isortIgnoreComments?.some((comment) =>
         getTrivia(stmt).includes(comment)
       )
   );

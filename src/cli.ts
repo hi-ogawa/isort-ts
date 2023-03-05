@@ -10,30 +10,41 @@ import { cac } from "cac";
 import consola from "consola";
 import { z } from "zod";
 import { version } from "../package.json";
-import {
-  DEFAULT_OPTIONS,
-  IsortOptions,
-  Z_USER_ISORT_OPTIONS,
-  cacOptionsFromZod,
-} from "./misc";
+import { DEFAULT_OPTIONS, IsortOptions, Z_USER_ISORT_OPTIONS } from "./misc";
 import { ParseError, tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
-const cliCommand = cli
+const Z_CLI_OPTIONS = z.object({
+  fix: z.boolean().optional(),
+  git: z.boolean().optional(),
+  cache: z.boolean().optional(),
+});
+
+cli
   .help()
   .version(version)
   .command("[...files]", "check import order")
+  .option(`--${Z_CLI_OPTIONS.keyof().enum.fix}`, "apply sorting in-place")
+  .option(`--${Z_CLI_OPTIONS.keyof().enum.git}`, "collect files based on git")
+  .option(`--${Z_CLI_OPTIONS.keyof().enum.cache}`, "enable caching")
+  .option(
+    `--${Z_USER_ISORT_OPTIONS.keyof().enum.isortIgnoreDeclarationSort}`,
+    "disable sorting import declarations"
+  )
+  .option(
+    `--${Z_USER_ISORT_OPTIONS.keyof().enum.isortIgnoreMemberSort}`,
+    "disable sorting import specifiers"
+  )
+  .option(
+    `--${Z_USER_ISORT_OPTIONS.keyof().enum.isortIgnoreCase}`,
+    "sort case insensitive"
+  )
+  .option(
+    `--${Z_USER_ISORT_OPTIONS.keyof().enum.isortIgnoreComments} <comment>`,
+    "special comments to ignore code from linting"
+  )
   .action(runCommand);
-
-const Z_CLI_OPTIONS = z.object({
-  fix: z.boolean().optional().describe("apply sorting in-place"),
-  git: z.boolean().optional().describe("collect files based on git"),
-  cache: z.boolean().optional().describe("enable caching"),
-});
-
-cacOptionsFromZod(cliCommand, Z_CLI_OPTIONS);
-cacOptionsFromZod(cliCommand, Z_USER_ISORT_OPTIONS);
 
 async function runCommand(files: string[], rawOptions: unknown) {
   const options = Z_CLI_OPTIONS.parse(rawOptions);

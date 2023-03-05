@@ -16,7 +16,6 @@ const NODE_BUILTIN_RE = new RegExp(
 
 export type IsortOptions = {
   isortOrder: RegExp[];
-  isortIgnoreComments: string[];
 } & UserIsortOptions;
 
 // TODO: test with non-default options
@@ -37,24 +36,16 @@ export const DEFAULT_OPTIONS: IsortOptions = {
 
 // prettier-ignore
 export const Z_USER_ISORT_OPTIONS = z.object({
-  isortIgnoreDeclarationSort: z.boolean().optional().describe("disable sorting import declarations"),
-  isortIgnoreMemberSort: z.boolean().optional().describe("disable sorting import specifiers"),
-  isortIgnoreCase: z.boolean().optional().describe("sort case insensitive"),
+  isortIgnoreDeclarationSort: z.boolean().optional(),
+  isortIgnoreMemberSort: z.boolean().optional(),
+  isortIgnoreCase: z.boolean().optional(),
+  isortIgnoreComments: z.preprocess(wrapArray, z.string().array()).optional(),
 });
 
 type UserIsortOptions = z.infer<typeof Z_USER_ISORT_OPTIONS>;
 
-//
-// zod
-//
-
-export function cacOptionsFromZod<T extends z.ZodObject<z.ZodRawShape>>(
-  command: { option: (option: string, description: string) => void },
-  schema: T
-) {
-  for (const [k, v] of Object.entries(schema.shape)) {
-    command.option(`--${k}`, v.description ?? "");
-  }
+function wrapArray(v: unknown): unknown[] {
+  return [v].flat(1);
 }
 
 //
