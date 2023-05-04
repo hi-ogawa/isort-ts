@@ -24,6 +24,7 @@ cli
   .option("--isortIgnoreDeclarationSort", "not sort import declarations")
   .option("--isortIgnoreMemberSort", "not sort import specifiers")
   .option("--isortIgnoreCase", "sort case insensitive")
+  .option("--isortIgnoreDuplicateDeclaration", "allow duplicate imports")
   .action(runCommand);
 
 async function runCommand(

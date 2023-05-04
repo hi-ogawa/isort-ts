@@ -1,4 +1,4 @@
-import { range, sortBy, tinyassert } from "@hiogawa/utils";
+import { groupBy, range, sortBy, tinyassert } from "@hiogawa/utils";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, IsortOptions, groupNeighborBy } from "./misc";
 
@@ -39,8 +39,18 @@ export function tsAnalyze(
 class TransformIsort {
   constructor(private options: IsortOptions) {}
 
-  run(code: string): string {
+  run(code: string) {
     const groups = this.analyze(code);
+
+    if (!this.options.isortIgnoreDuplicateSource) {
+      // check duplicate import source
+      const duplicates = findDuplicateSource(groups);
+      if (duplicates) {
+        // TODO(refactor): probably we shouldn't abuse error to workaround control flow
+        throw new DuplicateSourceError(code, duplicates);
+      }
+    }
+
     for (const group of groups) {
       if (!this.options.isortIgnoreMemberSort) {
         for (const decl of group) {
@@ -53,6 +63,7 @@ class TransformIsort {
         code = this.sortImportDeclarations(code, group);
       }
     }
+
     return code;
   }
 
@@ -200,12 +211,56 @@ function replaceSortedNodes(
 }
 
 //
+// duplicate source check
+//
+
+function findDuplicateSource(groups: ImportDeclarationInfo[][]) {
+  const groupBySource = groupBy(groups.flat(), (decl) => decl.source);
+
+  const duplicates = [...groupBySource.entries()]
+    .map(([source, decls]) => ({ source, decls }))
+    .filter((data) => data.decls.length >= 2);
+
+  if (duplicates.length > 0) {
+    return duplicates;
+  }
+  return;
+}
+
+interface DuplicateSourceInfo {
+  source: string;
+  decls: ImportDeclarationInfo[];
+}
+
+export class DuplicateSourceError extends Error {
+  constructor(
+    private input: string,
+    private duplicates: DuplicateSourceInfo[]
+  ) {
+    super(DuplicateSourceError.name);
+  }
+
+  getDetails(): DiagnosticsInfo[] {
+    return this.duplicates.flatMap(({ decls }) =>
+      decls.map((decl) => {
+        const [line, column] = resolvePosition(this.input, decl.start);
+        return {
+          message: `Duplicate import source "${decl.source}"`,
+          line,
+          column,
+        };
+      })
+    );
+  }
+}
+
+//
 // parse error
 //
 
 export class ParseError extends Error {
   constructor(private input: string, private diagnostics: ts.Diagnostic[]) {
-    super("isort-ts parse error");
+    super(ParseError.name);
   }
 
   getDetails(): DiagnosticsInfo[] {

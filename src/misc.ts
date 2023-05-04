@@ -18,6 +18,7 @@ export interface IsortOptions {
   isortIgnoreDeclarationSort?: boolean;
   isortIgnoreMemberSort?: boolean;
   isortIgnoreCase?: boolean;
+  isortIgnoreDuplicateSource?: boolean;
   isortIgnoreComments: string[];
 }
 
@@ -34,6 +35,7 @@ export const DEFAULT_OPTIONS: IsortOptions = {
   isortIgnoreDeclarationSort: false,
   isortIgnoreMemberSort: false,
   isortIgnoreCase: false,
+  isortIgnoreDuplicateSource: false,
   isortIgnoreComments: ["isort-ignore", "prettier-ignore"],
 };
 
