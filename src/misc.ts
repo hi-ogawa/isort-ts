@@ -30,7 +30,7 @@ export const DEFAULT_OPTIONS: IsortOptions = {
     NODE_BUILTIN_RE, // node:process, process
     /^.*:/,          // virtual:uno.css
     /^[^./]/,        // any-external
-    /./,         // ./any-local
+    /./,             // ./any-local
   ],
   isortIgnoreDeclarationSort: false,
   isortIgnoreMemberSort: false,
