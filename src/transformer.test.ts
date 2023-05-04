@@ -1,6 +1,11 @@
 import { tinyassert, wrapError } from "@hiogawa/utils";
 import { describe, expect, it } from "vitest";
-import { ParseError, tsAnalyze, tsTransformIsort } from "./transformer";
+import {
+  DuplicateSourceError,
+  ParseError,
+  tsAnalyze,
+  tsTransformIsort,
+} from "./transformer";
 
 describe("tsAnalyze", () => {
   it("comment", () => {
@@ -193,11 +198,11 @@ some-random # stuff
     expect(result).toMatchInlineSnapshot(`
       {
         "ok": false,
-        "value": [Error: isort-ts parse error],
+        "value": [Error: ParseError],
       }
     `);
     tinyassert(result.value instanceof ParseError);
-    expect(result.value.getDetails()).toMatchInlineSnapshot(`
+    expect(result.value.getDiagnostics()).toMatchInlineSnapshot(`
       [
         {
           "column": 12,
@@ -232,6 +237,54 @@ import process2 from "node:process";
       import y from \\"./local-a\\";
       import x from \\"./local-z\\";
       "
+    `);
+  });
+
+  it(DuplicateSourceError.name, () => {
+    const input = `\
+import { a1 } from "a";
+import { b1 } from "b";
+import { c3 } from "c";
+import { b2 } from "b";
+import { a2 } from "a";
+import { b3 } from "b";
+`;
+    const result = wrapError(() => tsTransformIsort(input));
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "ok": false,
+        "value": [Error: DuplicateSourceError],
+      }
+    `);
+    tinyassert(result.value instanceof DuplicateSourceError);
+    expect(result.value.getDiagnostics()).toMatchInlineSnapshot(`
+      [
+        {
+          "column": 0,
+          "line": 1,
+          "message": "Duplicate import source \\"a\\"",
+        },
+        {
+          "column": 0,
+          "line": 5,
+          "message": "Duplicate import source \\"a\\"",
+        },
+        {
+          "column": 0,
+          "line": 2,
+          "message": "Duplicate import source \\"b\\"",
+        },
+        {
+          "column": 0,
+          "line": 4,
+          "message": "Duplicate import source \\"b\\"",
+        },
+        {
+          "column": 0,
+          "line": 6,
+          "message": "Duplicate import source \\"b\\"",
+        },
+      ]
     `);
   });
 });

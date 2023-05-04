@@ -10,7 +10,7 @@ import { cac } from "cac";
 import consola from "consola";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
-import { ParseError, tsTransformIsort } from "./transformer";
+import { IsortError, tsTransformIsort } from "./transformer";
 
 const cli = cac("isort-ts");
 
@@ -24,6 +24,7 @@ cli
   .option("--isortIgnoreDeclarationSort", "not sort import declarations")
   .option("--isortIgnoreMemberSort", "not sort import specifiers")
   .option("--isortIgnoreCase", "sort case insensitive")
+  .option("--isortIgnoreDuplicateDeclaration", "allow duplicate imports")
   .action(runCommand);
 
 async function runCommand(
@@ -93,8 +94,8 @@ async function runCommand(
         results.fixable++;
       }
     } catch (e) {
-      if (e instanceof ParseError) {
-        const details = e.getDetails();
+      if (e instanceof IsortError) {
+        const details = e.getDiagnostics();
         tinyassert(details.length > 0);
         for (const detail of details) {
           consola.error(
