@@ -1,4 +1,5 @@
-import { groupBy, range, sortBy, tinyassert } from "@hiogawa/utils";
+import { groupBy, range, sortBy } from "@hiogawa/utils";
+import { tinyassert } from "@hiogawa/utils";
 import ts from "typescript";
 import { DEFAULT_OPTIONS, IsortOptions, groupNeighborBy } from "./misc";
 
@@ -211,6 +212,14 @@ function replaceSortedNodes(
 }
 
 //
+// base error
+//
+
+export abstract class IsortError extends Error {
+  abstract getDiagnostics(): DiagnosticsInfo[];
+}
+
+//
 // duplicate source check
 //
 
@@ -232,7 +241,7 @@ interface DuplicateSourceInfo {
   decls: ImportDeclarationInfo[];
 }
 
-export class DuplicateSourceError extends Error {
+export class DuplicateSourceError extends IsortError {
   constructor(
     private input: string,
     private duplicates: DuplicateSourceInfo[]
@@ -240,7 +249,7 @@ export class DuplicateSourceError extends Error {
     super(DuplicateSourceError.name);
   }
 
-  getDetails(): DiagnosticsInfo[] {
+  getDiagnostics(): DiagnosticsInfo[] {
     return this.duplicates.flatMap(({ decls }) =>
       decls.map((decl) => {
         const [line, column] = resolvePosition(this.input, decl.start);
@@ -258,12 +267,12 @@ export class DuplicateSourceError extends Error {
 // parse error
 //
 
-export class ParseError extends Error {
+export class ParseError extends IsortError {
   constructor(private input: string, private diagnostics: ts.Diagnostic[]) {
     super(ParseError.name);
   }
 
-  getDetails(): DiagnosticsInfo[] {
+  getDiagnostics(): DiagnosticsInfo[] {
     return this.diagnostics.map((d) => formatDiagnostic(this.input, d));
   }
 }

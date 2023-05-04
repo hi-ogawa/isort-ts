@@ -202,7 +202,7 @@ some-random # stuff
       }
     `);
     tinyassert(result.value instanceof ParseError);
-    expect(result.value.getDetails()).toMatchInlineSnapshot(`
+    expect(result.value.getDiagnostics()).toMatchInlineSnapshot(`
       [
         {
           "column": 12,
@@ -257,7 +257,7 @@ import { b3 } from "b";
       }
     `);
     tinyassert(result.value instanceof DuplicateSourceError);
-    expect(result.value.getDetails()).toMatchInlineSnapshot(`
+    expect(result.value.getDiagnostics()).toMatchInlineSnapshot(`
       [
         {
           "column": 0,
