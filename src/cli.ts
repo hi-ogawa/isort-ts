@@ -5,6 +5,11 @@ import { dirname } from "node:path";
 import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
+import {
+  type ArgSchemaRecordBase,
+  type TypedArgs,
+  defineCommand,
+} from "@hiogawa/tiny-cli";
 import { tinyassert } from "@hiogawa/utils";
 import { cac } from "cac";
 import consola from "consola";
@@ -12,38 +17,93 @@ import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-const cli = cac("isort-ts");
+// isort-ts/1.0.2-pre.1
 
-cli
-  .help()
-  .version(version)
-  .command("[...files]", "check import order")
-  .option("--fix", "apply sorting in-place")
-  .option("--git", "collect files based on git")
-  .option("--cache", "enable caching")
-  .option("--isortIgnoreDeclarationSort", "not sort import declarations")
-  .option("--isortIgnoreMemberSort", "not sort import specifiers")
-  .option("--isortIgnoreCase", "sort case insensitive")
-  .option("--isortIgnoreDuplicateDeclaration", "allow duplicate imports")
-  .action(runCommand);
+// Usage:
+//   $ isort-ts [...files]
 
-async function runCommand(
-  files: string[],
-  options: {
-    fix?: boolean;
-    git?: boolean;
-    cache?: boolean;
-    isortIgnoreDeclarationSort?: boolean;
-    isortIgnoreMemberSort?: boolean;
-    isortIgnoreCase?: boolean;
-  }
-) {
+// Commands:
+//   [...files]  check import order
+
+// For more info, run any command with the `--help` flag:
+//   $ isort-ts --help
+
+// Options:
+//   --fix                              apply sorting in-place
+//   --git                              collect files based on git
+//   --cache                            enable caching
+//   --isortIgnoreDeclarationSort       not sort import declarations
+//   --isortIgnoreMemberSort            not sort import specifiers
+//   --isortIgnoreCase                  sort case insensitive
+//   --isortIgnoreDuplicateDeclaration  allow duplicate imports
+//   -h, --help                         Display this message
+//   -v, --version                      Display version number
+
+const builtinArgs = {
+  variadicString: {
+    type: "positional",
+    variadic: true,
+    parse: (v: unknown) => v as string[],
+  },
+  flag: {
+    type: "flag",
+    parse: (v: unknown) => Boolean(v),
+  },
+} as const;
+
+const argsSchema = {
+  files: {
+    describe: "typescript files",
+    ...builtinArgs.variadicString,
+  },
+  fix: {
+    describe: "apply sorting in-place",
+    ...builtinArgs.flag,
+  },
+  git: {
+    describe: "collect files based on git",
+    ...builtinArgs.flag,
+  },
+  cache: {
+    describe: "enable caching",
+    ...builtinArgs.flag,
+  },
+  isortIgnoreDeclarationSort: {
+    describe: "disable sorting import declarations",
+    ...builtinArgs.flag,
+  },
+  isortIgnoreMemberSort: {
+    describe: "disable sorting import specifiers",
+    ...builtinArgs.flag,
+  },
+  isortIgnoreCase: {
+    describe: "sort case insensitive",
+    ...builtinArgs.flag,
+  },
+  isortIgnoreDuplicateDeclaration: {
+    describe: "allow duplicate imports",
+    ...builtinArgs.flag,
+  },
+} satisfies ArgSchemaRecordBase;
+
+const command = defineCommand(
+  {
+    program: "isort-ts",
+    describe: "Lint ESM module import order",
+    autoHelp: true,
+    args: argsSchema,
+  },
+  ({ args }) => runCommand(args)
+);
+
+async function runCommand(options: TypedArgs<typeof argsSchema>) {
+  let files = options.files;
   if (options.git) {
     files = files.concat(await collectFilesByGit());
   }
 
   if (files.length === 0) {
-    cli.outputHelp();
+    console.log(command.help());
     return;
   }
 
@@ -258,8 +318,10 @@ function measureSync<T>(f: () => T): [T, number] {
 
 async function main() {
   try {
-    cli.parse(undefined, { run: false });
-    await cli.runMatchedCommand();
+    await command.parse(process.argv.slice(2));
+    // process.argv.slice(2)
+    // cli.parse(undefined, { run: false });
+    // await cli.runMatchedCommand();
   } catch (e: unknown) {
     consola.error(e);
     process.exit(1);

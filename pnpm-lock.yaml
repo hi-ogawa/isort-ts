@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   cac:
     specifier: ^6.7.14
@@ -15,6 +19,9 @@ devDependencies:
   '@changesets/cli':
     specifier: ^2.26.1
     version: 2.26.1
+  '@hiogawa/tiny-cli':
+    specifier: ^0.0.1-pre.0
+    version: 0.0.1-pre.0
   '@hiogawa/utils':
     specifier: 1.4.2-pre.9
     version: 1.4.2-pre.9
@@ -671,6 +678,10 @@ packages:
       lodash: 4.17.21
       prettier: 2.8.4
       typescript: 4.9.5
+    dev: true
+
+  /@hiogawa/tiny-cli@0.0.1-pre.0:
+    resolution: {integrity: sha512-PeMvDtZ6cEIasGYO4ZxEePjOcOMAlMrtj3cnZBeC0b0AzOPV/J9Gx5mceparGSAqxYgANnl3iPzIEAAxCzRktg==}
     dev: true
 
   /@hiogawa/utils@1.4.2-pre.9:
