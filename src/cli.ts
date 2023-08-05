@@ -11,34 +11,12 @@ import {
   defineCommand,
 } from "@hiogawa/tiny-cli";
 import { tinyassert } from "@hiogawa/utils";
-import { cac } from "cac";
 import consola from "consola";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-// isort-ts/1.0.2-pre.1
-
-// Usage:
-//   $ isort-ts [...files]
-
-// Commands:
-//   [...files]  check import order
-
-// For more info, run any command with the `--help` flag:
-//   $ isort-ts --help
-
-// Options:
-//   --fix                              apply sorting in-place
-//   --git                              collect files based on git
-//   --cache                            enable caching
-//   --isortIgnoreDeclarationSort       not sort import declarations
-//   --isortIgnoreMemberSort            not sort import specifiers
-//   --isortIgnoreCase                  sort case insensitive
-//   --isortIgnoreDuplicateDeclaration  allow duplicate imports
-//   -h, --help                         Display this message
-//   -v, --version                      Display version number
-
+// TODO: DX helpers in tiny-cli
 const builtinArgs = {
   variadicString: {
     type: "positional",
