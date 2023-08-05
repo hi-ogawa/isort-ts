@@ -17,8 +17,8 @@ import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-const flag = (describe?: string): ArgSchema<boolean> => ({
-  describe,
+const flag = (help?: string): ArgSchema<boolean> => ({
+  help,
   type: "flag",
   parse: (v: unknown) => Boolean(v),
 });
@@ -27,7 +27,7 @@ const argsSchema = {
   files: {
     type: "positional",
     variadic: true,
-    describe: "typescript files",
+    help: "typescript files",
     parse: (v: unknown) => v as string[],
   },
   fix: flag("apply sorting in-place"),
@@ -42,7 +42,7 @@ const argsSchema = {
 const command = defineCommand(
   {
     program: "isort-ts",
-    describe: "Lint ESM module import order",
+    help: "Lint ESM module import order",
     autoHelp: true,
     args: argsSchema,
   },
