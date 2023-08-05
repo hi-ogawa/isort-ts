@@ -6,6 +6,7 @@ import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
 import {
+  type ArgSchema,
   type ArgSchemaRecordBase,
   type TypedArgs,
   defineCommand,
@@ -16,52 +17,26 @@ import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-// TODO: DX helpers in tiny-cli
-const builtinArgs = {
-  variadicString: {
-    type: "positional",
-    variadic: true,
-    parse: (v: unknown) => v as string[],
-  },
-  flag: {
-    type: "flag",
-    parse: (v: unknown) => Boolean(v),
-  },
-} as const;
+const flag = (describe?: string): ArgSchema<boolean> => ({
+  describe,
+  type: "flag",
+  parse: (v: unknown) => Boolean(v),
+});
 
 const argsSchema = {
   files: {
+    type: "positional",
+    variadic: true,
     describe: "typescript files",
-    ...builtinArgs.variadicString,
+    parse: (v: unknown) => v as string[],
   },
-  fix: {
-    describe: "apply sorting in-place",
-    ...builtinArgs.flag,
-  },
-  git: {
-    describe: "collect files based on git",
-    ...builtinArgs.flag,
-  },
-  cache: {
-    describe: "enable caching",
-    ...builtinArgs.flag,
-  },
-  isortIgnoreDeclarationSort: {
-    describe: "disable sorting import declarations",
-    ...builtinArgs.flag,
-  },
-  isortIgnoreMemberSort: {
-    describe: "disable sorting import specifiers",
-    ...builtinArgs.flag,
-  },
-  isortIgnoreCase: {
-    describe: "sort case insensitive",
-    ...builtinArgs.flag,
-  },
-  isortIgnoreDuplicateDeclaration: {
-    describe: "allow duplicate imports",
-    ...builtinArgs.flag,
-  },
+  fix: flag("apply sorting in-place"),
+  git: flag("collect files based on git"),
+  cache: flag("enable caching"),
+  isortIgnoreDeclarationSort: flag("disable sorting import declarations"),
+  isortIgnoreMemberSort: flag("disable sorting import specifiers"),
+  isortIgnoreCase: flag("sort case insensitive"),
+  isortIgnoreDuplicateDeclaration: flag("allow duplicate imports"),
 } satisfies ArgSchemaRecordBase;
 
 const command = defineCommand(
