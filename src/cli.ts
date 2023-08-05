@@ -297,9 +297,6 @@ function measureSync<T>(f: () => T): [T, number] {
 async function main() {
   try {
     await command.parse(process.argv.slice(2));
-    // process.argv.slice(2)
-    // cli.parse(undefined, { run: false });
-    // await cli.runMatchedCommand();
   } catch (e: unknown) {
     consola.error(e);
     process.exit(1);
