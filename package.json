@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.0.2-pre.1",
+  "version": "1.1.0",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
@@ -32,7 +32,7 @@
     "release": "pnpm publish --no-git-checks --access public"
   },
   "devDependencies": {
-    "--isort-ts": "npm:@hiogawa/isort-ts@1.0.0-pre.11",
+    "--isort-ts": "npm:@hiogawa/isort-ts@1.1.0",
     "@changesets/cli": "^2.26.1",
     "@hiogawa/tiny-cli": "0.0.2",
     "@hiogawa/utils": "1.6.0",
