@@ -51,6 +51,11 @@
     "prettier": "*",
     "typescript": "*"
   },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  },
   "volta": {
     "node": "18.14.0"
   }
