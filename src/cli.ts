@@ -6,9 +6,9 @@ import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
 import {
-  type ArgSchema,
   type ArgSchemaRecordBase,
   type TypedArgs,
+  arg,
   defineCommand,
 } from "@hiogawa/tiny-cli";
 import { tinyassert } from "@hiogawa/utils";
@@ -17,26 +17,17 @@ import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-const flag = (description?: string): ArgSchema<boolean> => ({
-  description,
-  type: "flag",
-  parse: (v: unknown) => Boolean(v),
-});
-
 const argsSchema = {
-  files: {
-    type: "positional",
-    variadic: true,
-    description: "typescript files",
-    parse: (v: unknown) => v as string[],
-  },
-  fix: flag("apply sorting in-place"),
-  git: flag("collect files based on git"),
-  cache: flag("enable caching"),
-  isortIgnoreDeclarationSort: flag("disable sorting import declarations"),
-  isortIgnoreMemberSort: flag("disable sorting import specifiers"),
-  isortIgnoreCase: flag("sort case insensitive"),
-  isortIgnoreDuplicateDeclaration: flag("allow duplicate imports"),
+  files: arg.stringArray("typescript files to lint"),
+  fix: arg.boolean("apply sorting in-place"),
+  git: arg.boolean("collect files based on git"),
+  cache: arg.boolean("enable caching"),
+  isortIgnoreDeclarationSort: arg.boolean(
+    "disable sorting import declarations"
+  ),
+  isortIgnoreMemberSort: arg.boolean("disable sorting import specifiers"),
+  isortIgnoreCase: arg.boolean("sort case insensitive"),
+  isortIgnoreDuplicateDeclaration: arg.boolean("allow duplicate imports"),
 } satisfies ArgSchemaRecordBase;
 
 const command = defineCommand(
