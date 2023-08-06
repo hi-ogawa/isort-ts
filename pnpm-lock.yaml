@@ -6,8 +6,8 @@ settings:
 
 devDependencies:
   '--isort-ts':
-    specifier: npm:@hiogawa/isort-ts@1.0.0-pre.11
-    version: /@hiogawa/isort-ts@1.0.0-pre.11(prettier@2.8.4)(typescript@4.9.5)
+    specifier: npm:@hiogawa/isort-ts@1.1.0
+    version: /@hiogawa/isort-ts@1.1.0(prettier@2.8.4)(typescript@4.9.5)
   '@changesets/cli':
     specifier: ^2.26.1
     version: 2.26.1
@@ -658,16 +658,16 @@ packages:
     dev: true
     optional: true
 
-  /@hiogawa/isort-ts@1.0.0-pre.11(prettier@2.8.4)(typescript@4.9.5):
-    resolution: {integrity: sha512-55Id9ENzKjWfm89wuiLMvAflKm+UggLjPHqk99kV/XYYQsPhM81ig1PN/1nCGym3BK811NLhlKbpdBFyPKU1NA==}
+  /@hiogawa/isort-ts@1.1.0(prettier@2.8.4)(typescript@4.9.5):
+    resolution: {integrity: sha512-8jMjGKUd36h+QFU+O7VzGoJ2wHzLT6J19gA+k5RhOTgL5ErxghZu5v3Rsw2ZGHQsCYGzJdQjG8I/fxYpf8V1aA==}
     hasBin: true
     peerDependencies:
       prettier: '*'
       typescript: '*'
+    peerDependenciesMeta:
+      prettier:
+        optional: true
     dependencies:
-      cac: 6.7.14
-      consola: 2.15.3
-      lodash: 4.17.21
       prettier: 2.8.4
       typescript: 4.9.5
     dev: true
@@ -1093,10 +1093,6 @@ packages:
 
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
-    dev: true
-
-  /consola@2.15.3:
-    resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
     dev: true
 
   /cross-spawn@5.1.0:
@@ -2020,10 +2016,6 @@ packages:
 
   /lodash.startcase@4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
-    dev: true
-
-  /lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: true
 
   /loupe@2.3.6:
