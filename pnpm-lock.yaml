@@ -12,11 +12,11 @@ devDependencies:
     specifier: ^2.26.1
     version: 2.26.1
   '@hiogawa/tiny-cli':
-    specifier: 0.0.1-pre.9
-    version: 0.0.1-pre.9
+    specifier: 0.0.2
+    version: 0.0.2
   '@hiogawa/utils':
-    specifier: 1.6.0-pre.2
-    version: 1.6.0-pre.2
+    specifier: 1.6.0
+    version: 1.6.0
   '@tsconfig/strictest':
     specifier: ^1.0.2
     version: 1.0.2
@@ -672,12 +672,12 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /@hiogawa/tiny-cli@0.0.1-pre.9:
-    resolution: {integrity: sha512-aExTMYhry8IvJM/6GZWA4MGDhW0QUCsCNg94cgREII32sk0Bjk4XMgCyfFBUDimHXPdlubZdoXcjnu2+qsAJLQ==}
+  /@hiogawa/tiny-cli@0.0.2:
+    resolution: {integrity: sha512-gbBga8mIQPa/jb4HsDNi56WGmL/P54dc7+hJN1odAesgoQf/A6shKTOBt23jftHMq604jbo8dq2ayH0b4osFkQ==}
     dev: true
 
-  /@hiogawa/utils@1.6.0-pre.2:
-    resolution: {integrity: sha512-ji/1XLwXicSQwRASAPvrgnvHW7M1/w5R5zkgNBYxRl7cBj864affaxE/6XhcHbAEttBoKeg4pp2JV9yUg39giQ==}
+  /@hiogawa/utils@1.6.0:
+    resolution: {integrity: sha512-xamhJogybsjiUD0qhf84lpOPtHZEAiFR6M8S+A3bLIDg08Z8WhRCujTiDOxoEFTvPpX9yzwhkccaa2sEL5sgfw==}
     dev: true
 
   /@manypkg/find-root@1.1.0:
