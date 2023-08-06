@@ -11,8 +11,7 @@ import {
   arg,
   defineCommand,
 } from "@hiogawa/tiny-cli";
-import { tinyassert } from "@hiogawa/utils";
-import consola from "consola";
+import { consoleErrorExtra, tinyassert } from "@hiogawa/utils";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
@@ -82,7 +81,8 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
       const [result, time] = measureSync(() => lruCache.run(input));
       const timeMessage = `${time.toFixed(0)} ms`;
       if (result.ok) {
-        consola.success(
+        console.log(
+          STATUS.success,
           filePath,
           timeMessage + (result.hit ? " (cached)" : "")
         );
@@ -94,7 +94,7 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
           // note that, however, if prettier is follwoding isort-ts, then the output will be once more overwritten.
           lruCache.cache(result.output);
         }
-        consola.info(filePath, timeMessage);
+        console.log(STATUS.info, filePath, timeMessage);
         results.fixable++;
       }
     } catch (e) {
@@ -102,13 +102,14 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
         const details = e.getDiagnostics();
         tinyassert(details.length > 0);
         for (const detail of details) {
-          consola.error(
+          console.error(
+            STATUS.error,
             `${filePath}:${detail.line}:${detail.column}`,
             detail.message
           );
         }
       } else {
-        consola.error(filePath, e);
+        console.error(STATUS.error, filePath, e);
       }
       results.error++;
     }
@@ -136,6 +137,13 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
     }
   }
 }
+
+// cf. https://github.com/unjs/consola/blob/e4a37c1cd2c8d96b5f30d8c13ff2df32244baa6a/src/reporters/fancy.ts#L26-L38
+const STATUS = {
+  info: "ℹ",
+  success: "✔",
+  error: "✖",
+};
 
 //
 // cache
@@ -264,7 +272,7 @@ async function main() {
   try {
     await command.parse(process.argv.slice(2));
   } catch (e: unknown) {
-    consola.error(e);
+    consoleErrorExtra(e);
     process.exit(1);
   }
 }

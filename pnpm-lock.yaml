@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-dependencies:
-  consola:
-    specifier: ^2.15.3
-    version: 2.15.3
-
 devDependencies:
   '--isort-ts':
     specifier: npm:@hiogawa/isort-ts@1.0.0-pre.11
@@ -20,8 +15,8 @@ devDependencies:
     specifier: 0.0.1-pre.9
     version: 0.0.1-pre.9
   '@hiogawa/utils':
-    specifier: 1.4.2-pre.9
-    version: 1.4.2-pre.9
+    specifier: 1.6.0-pre.0
+    version: 1.6.0-pre.0
   '@tsconfig/strictest':
     specifier: ^1.0.2
     version: 1.0.2
@@ -681,8 +676,8 @@ packages:
     resolution: {integrity: sha512-aExTMYhry8IvJM/6GZWA4MGDhW0QUCsCNg94cgREII32sk0Bjk4XMgCyfFBUDimHXPdlubZdoXcjnu2+qsAJLQ==}
     dev: true
 
-  /@hiogawa/utils@1.4.2-pre.9:
-    resolution: {integrity: sha512-XT5XROUx3NL9Al4nEt2VZEIY4dDrxT3vVjQWy0kpu0vnSn81JuDfM7TiX5Sbo6oiAtQkjX9XbTfns8VKDtB0Mg==}
+  /@hiogawa/utils@1.6.0-pre.0:
+    resolution: {integrity: sha512-cAWkPjqByXAZMvnGjKk09Rqun5wslGVQ/sQK0UqvyTAoozP+YD7XDg+zVBlbO52wkETjm5V0hv5C6EMzyxTQlQ==}
     dev: true
 
   /@manypkg/find-root@1.1.0:
@@ -1102,6 +1097,7 @@ packages:
 
   /consola@2.15.3:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
+    dev: true
 
   /cross-spawn@5.1.0:
     resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
