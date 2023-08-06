@@ -5,45 +5,48 @@ import { dirname } from "node:path";
 import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
-import { tinyassert } from "@hiogawa/utils";
-import { cac } from "cac";
-import consola from "consola";
+import {
+  type ArgSchemaRecordBase,
+  type TypedArgs,
+  arg,
+  defineCommand,
+} from "@hiogawa/tiny-cli";
+import { formatError, tinyassert } from "@hiogawa/utils";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
 
-const cli = cac("isort-ts");
+const argsSchema = {
+  files: arg.stringArray("typescript files to lint"),
+  fix: arg.boolean("apply sorting in-place"),
+  git: arg.boolean("collect files based on git"),
+  cache: arg.boolean("enable caching"),
+  isortIgnoreDeclarationSort: arg.boolean(
+    "disable sorting import declarations"
+  ),
+  isortIgnoreMemberSort: arg.boolean("disable sorting import specifiers"),
+  isortIgnoreCase: arg.boolean("sort case insensitive"),
+  isortIgnoreDuplicateDeclaration: arg.boolean("allow duplicate imports"),
+} satisfies ArgSchemaRecordBase;
 
-cli
-  .help()
-  .version(version)
-  .command("[...files]", "check import order")
-  .option("--fix", "apply sorting in-place")
-  .option("--git", "collect files based on git")
-  .option("--cache", "enable caching")
-  .option("--isortIgnoreDeclarationSort", "not sort import declarations")
-  .option("--isortIgnoreMemberSort", "not sort import specifiers")
-  .option("--isortIgnoreCase", "sort case insensitive")
-  .option("--isortIgnoreDuplicateDeclaration", "allow duplicate imports")
-  .action(runCommand);
+const command = defineCommand(
+  {
+    program: "isort-ts",
+    description: "Lint ESM module import order",
+    autoHelp: true,
+    args: argsSchema,
+  },
+  ({ args }) => runCommand(args)
+);
 
-async function runCommand(
-  files: string[],
-  options: {
-    fix?: boolean;
-    git?: boolean;
-    cache?: boolean;
-    isortIgnoreDeclarationSort?: boolean;
-    isortIgnoreMemberSort?: boolean;
-    isortIgnoreCase?: boolean;
-  }
-) {
+async function runCommand(options: TypedArgs<typeof argsSchema>) {
+  let files = options.files;
   if (options.git) {
     files = files.concat(await collectFilesByGit());
   }
 
   if (files.length === 0) {
-    cli.outputHelp();
+    console.log(command.help());
     return;
   }
 
@@ -78,7 +81,8 @@ async function runCommand(
       const [result, time] = measureSync(() => lruCache.run(input));
       const timeMessage = `${time.toFixed(0)} ms`;
       if (result.ok) {
-        consola.success(
+        console.log(
+          STATUS.success,
           filePath,
           timeMessage + (result.hit ? " (cached)" : "")
         );
@@ -90,7 +94,7 @@ async function runCommand(
           // note that, however, if prettier is follwoding isort-ts, then the output will be once more overwritten.
           lruCache.cache(result.output);
         }
-        consola.info(filePath, timeMessage);
+        console.log(STATUS.info, filePath, timeMessage);
         results.fixable++;
       }
     } catch (e) {
@@ -98,13 +102,14 @@ async function runCommand(
         const details = e.getDiagnostics();
         tinyassert(details.length > 0);
         for (const detail of details) {
-          consola.error(
+          console.error(
+            STATUS.error,
             `${filePath}:${detail.line}:${detail.column}`,
             detail.message
           );
         }
       } else {
-        consola.error(filePath, e);
+        console.error(STATUS.error, filePath, e);
       }
       results.error++;
     }
@@ -132,6 +137,13 @@ async function runCommand(
     }
   }
 }
+
+// cf. https://github.com/unjs/consola/blob/e4a37c1cd2c8d96b5f30d8c13ff2df32244baa6a/src/reporters/fancy.ts#L26-L38
+const STATUS = {
+  info: "ℹ",
+  success: "✔",
+  error: "✖",
+};
 
 //
 // cache
@@ -258,10 +270,9 @@ function measureSync<T>(f: () => T): [T, number] {
 
 async function main() {
   try {
-    cli.parse(undefined, { run: false });
-    await cli.runMatchedCommand();
+    await command.parse(process.argv.slice(2));
   } catch (e: unknown) {
-    consola.error(e);
+    console.log(formatError(e));
     process.exit(1);
   }
 }
