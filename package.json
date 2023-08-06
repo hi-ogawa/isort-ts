@@ -35,7 +35,7 @@
     "--isort-ts": "npm:@hiogawa/isort-ts@1.0.0-pre.11",
     "@changesets/cli": "^2.26.1",
     "@hiogawa/tiny-cli": "0.0.1-pre.9",
-    "@hiogawa/utils": "1.6.0-pre.0",
+    "@hiogawa/utils": "1.6.0-pre.1",
     "@tsconfig/strictest": "^1.0.2",
     "@types/node": "^18.14.1",
     "@types/prettier": "^2.7.2",

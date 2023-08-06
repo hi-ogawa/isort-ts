@@ -15,8 +15,8 @@ devDependencies:
     specifier: 0.0.1-pre.9
     version: 0.0.1-pre.9
   '@hiogawa/utils':
-    specifier: 1.6.0-pre.0
-    version: 1.6.0-pre.0
+    specifier: 1.6.0-pre.1
+    version: 1.6.0-pre.1
   '@tsconfig/strictest':
     specifier: ^1.0.2
     version: 1.0.2
@@ -676,8 +676,8 @@ packages:
     resolution: {integrity: sha512-aExTMYhry8IvJM/6GZWA4MGDhW0QUCsCNg94cgREII32sk0Bjk4XMgCyfFBUDimHXPdlubZdoXcjnu2+qsAJLQ==}
     dev: true
 
-  /@hiogawa/utils@1.6.0-pre.0:
-    resolution: {integrity: sha512-cAWkPjqByXAZMvnGjKk09Rqun5wslGVQ/sQK0UqvyTAoozP+YD7XDg+zVBlbO52wkETjm5V0hv5C6EMzyxTQlQ==}
+  /@hiogawa/utils@1.6.0-pre.1:
+    resolution: {integrity: sha512-jloxcaNH7UewxpCs8mpn/f6M4NG2eQvcoNhG1xno4Xe8Td1czfM9O8RntW5e1Aus+d3a56im1+5+UlNRxT1xEQ==}
     dev: true
 
   /@manypkg/find-root@1.1.0:

@@ -11,7 +11,7 @@ import {
   arg,
   defineCommand,
 } from "@hiogawa/tiny-cli";
-import { consoleErrorExtra, tinyassert } from "@hiogawa/utils";
+import { consoleErrorPretty, tinyassert } from "@hiogawa/utils";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
@@ -272,7 +272,7 @@ async function main() {
   try {
     await command.parse(process.argv.slice(2));
   } catch (e: unknown) {
-    consoleErrorExtra(e);
+    consoleErrorPretty(e, { noColor: !process.stderr.isTTY });
     process.exit(1);
   }
 }
