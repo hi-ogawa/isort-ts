@@ -6,10 +6,11 @@ import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { promisify } from "node:util";
 import {
-  type ArgSchemaRecordBase,
+  type ArgSchemaRecord,
+  TinyCliCommand,
+  TinyCliParseError,
   type TypedArgs,
   arg,
-  defineCommand,
 } from "@hiogawa/tiny-cli";
 import { formatError, tinyassert } from "@hiogawa/utils";
 import { version } from "../package.json";
@@ -27,13 +28,13 @@ const argsSchema = {
   isortIgnoreMemberSort: arg.boolean("disable sorting import specifiers"),
   isortIgnoreCase: arg.boolean("sort case insensitive"),
   isortIgnoreDuplicateDeclaration: arg.boolean("allow duplicate imports"),
-} satisfies ArgSchemaRecordBase;
+} satisfies ArgSchemaRecord;
 
-const command = defineCommand(
+const command = new TinyCliCommand(
   {
     program: "isort-ts",
+    version,
     description: "Lint ESM module import order",
-    autoHelp: true,
     args: argsSchema,
   },
   ({ args }) => runCommand(args)
@@ -273,6 +274,9 @@ async function main() {
     await command.parse(process.argv.slice(2));
   } catch (e: unknown) {
     console.log(formatError(e));
+    if (e instanceof TinyCliParseError) {
+      console.log("See '--help' for more info.\n\n" + command.help());
+    }
     process.exit(1);
   }
 }
