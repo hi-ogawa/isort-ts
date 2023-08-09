@@ -12,8 +12,8 @@ devDependencies:
     specifier: ^2.26.1
     version: 2.26.1
   '@hiogawa/tiny-cli':
-    specifier: 0.0.2
-    version: 0.0.2
+    specifier: 0.0.3
+    version: 0.0.3
   '@hiogawa/utils':
     specifier: 1.6.0
     version: 1.6.0
@@ -672,8 +672,8 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /@hiogawa/tiny-cli@0.0.2:
-    resolution: {integrity: sha512-gbBga8mIQPa/jb4HsDNi56WGmL/P54dc7+hJN1odAesgoQf/A6shKTOBt23jftHMq604jbo8dq2ayH0b4osFkQ==}
+  /@hiogawa/tiny-cli@0.0.3:
+    resolution: {integrity: sha512-5ZRDn0XW12mV+rov25z1oksyRP6IeW6ydEki81lHxbDEGrE/IGcrvkGTCXtbeSWIYmclNpVpuLee01KeB2jyvQ==}
     dev: true
 
   /@hiogawa/utils@1.6.0:
