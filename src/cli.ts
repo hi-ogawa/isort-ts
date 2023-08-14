@@ -193,17 +193,13 @@ export class LruCacheSet<I, V> {
     }
     const result = this.options.cachedFn(input);
     if (result.ok) {
-      this.cacheKey(key);
+      this.cacheMap.set(key, true);
     }
     return result;
   }
 
   cache(input: I) {
-    this.cacheKey(this.options.hashFn(input));
-  }
-
-  private cacheKey(key: string) {
-    this.cacheMap.set(key, true);
+    this.cacheMap.set(this.options.hashFn(input), true);
   }
 }
 
