@@ -12,7 +12,13 @@ import {
   type TypedArgs,
   arg,
 } from "@hiogawa/tiny-cli";
-import { LruCache, formatError, tinyassert } from "@hiogawa/utils";
+import {
+  LruCache,
+  arrayFromAsyncGenerator,
+  formatError,
+  mapToAsyncGenerator,
+  tinyassert,
+} from "@hiogawa/utils";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
@@ -22,6 +28,7 @@ const argsSchema = {
   fix: arg.boolean("apply sorting in-place"),
   git: arg.boolean("collect files based on git"),
   cache: arg.boolean("enable caching"),
+  concurrency: arg.number("concurrency", { default: 10 }),
   isortIgnoreDeclarationSort: arg.boolean(
     "disable sorting import declarations"
   ),
@@ -116,13 +123,12 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
     }
   }
 
-  // TODO
-  // parallel in worker?
-  // `Promise.all` is bad when there are too many files
-  // since `fs.promises.writeFile` would contend the resouce and modified files become momentarily empty/purged.
-  for (const file of files) {
-    await runTransform(file);
-  }
+  // bounded Promise.all
+  await arrayFromAsyncGenerator(
+    mapToAsyncGenerator(files, (file) => runTransform(file), {
+      concurrency: options.concurrency,
+    })
+  );
 
   if (options.cache) {
     await lruCache.store(CACHE_PATH);
