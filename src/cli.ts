@@ -67,7 +67,7 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
 
   const lruCache = new LruCacheSet({
     hashFn: (input: string) => hashString(isortOptionsString + "@" + input),
-    cachedFn: (input: string) => {
+    cachedFn: async (input: string) => {
       const output = tsTransformIsort(input, isortOptions);
       return { ok: input === output, output };
     },
@@ -79,7 +79,7 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
   async function runTransform(filePath: string) {
     try {
       const input = await fs.promises.readFile(filePath, "utf-8");
-      const [result, time] = measureSync(() => lruCache.run(input));
+      const [result, time] = await measureAsync(() => lruCache.run(input));
       const timeMessage = `${time.toFixed(0)} ms`;
       if (result.ok) {
         console.log(
@@ -160,7 +160,7 @@ export class LruCacheSet<I, V> {
 
   constructor(
     private options: {
-      cachedFn: (input: I) => { ok: boolean; output: V }; // we cache `hashFn(input)` when `ok: true`
+      cachedFn: (input: I) => Promise<{ ok: boolean; output: V }>; // we cache `hashFn(input)` when `ok: true`
       hashFn: (input: I) => string;
     }
   ) {}
@@ -186,12 +186,14 @@ export class LruCacheSet<I, V> {
     await fs.promises.writeFile(file, JSON.stringify([...keys]));
   }
 
-  run(input: I): { ok: true; hit?: boolean } | { ok: false; output: V } {
+  async run(
+    input: I
+  ): Promise<{ ok: true; hit?: boolean } | { ok: false; output: V }> {
     const key = this.options.hashFn(input);
     if (this.cacheMap.get(key)) {
       return { ok: true, hit: true };
     }
-    const result = this.options.cachedFn(input);
+    const result = await this.options.cachedFn(input);
     if (result.ok) {
       this.cacheMap.set(key, true);
     }
@@ -230,9 +232,9 @@ async function collectFilesByGit(): Promise<string[]> {
 // perf
 //
 
-function measureSync<T>(f: () => T): [T, number] {
+async function measureAsync<T>(f: () => Promise<T>): Promise<[T, number]> {
   const t0 = performance.now();
-  const y = f();
+  const y = await f();
   const t1 = performance.now();
   return [y, t1 - t0];
 }
