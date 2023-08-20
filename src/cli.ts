@@ -12,7 +12,7 @@ import {
   type TypedArgs,
   arg,
 } from "@hiogawa/tiny-cli";
-import { formatError, tinyassert } from "@hiogawa/utils";
+import { LruCache, formatError, tinyassert } from "@hiogawa/utils";
 import { version } from "../package.json";
 import { DEFAULT_OPTIONS, IsortOptions } from "./misc";
 import { IsortError, tsTransformIsort } from "./transformer";
@@ -156,7 +156,7 @@ const CACHE_MAX_SIZE = 100_000;
 const CACHE_PATH = `node_modules/.cache/@hiogawa/isort-ts/.cache-v${version}`; // TODO: configurable
 
 export class LruCacheSet<I, V> {
-  private cached = new Set<string>();
+  private cacheMap = new LruCache<string, true>(CACHE_MAX_SIZE);
 
   constructor(
     private options: {
@@ -171,8 +171,10 @@ export class LruCacheSet<I, V> {
     }
 
     const content = await fs.promises.readFile(file, "utf-8");
-    const set = deserializeSet(content);
-    this.cached = set;
+    const keys = JSON.parse(content);
+    tinyassert(Array.isArray(keys));
+    tinyassert(keys.every((e: unknown) => typeof e === "string"));
+    this.cacheMap._map = new Map(keys.map((k) => [k, true]));
   }
 
   async store(file: string) {
@@ -180,55 +182,25 @@ export class LruCacheSet<I, V> {
     if (!fs.existsSync(filedir)) {
       await fs.promises.mkdir(filedir, { recursive: true });
     }
-    const s = serializeSet(this.cached);
-    await fs.promises.writeFile(file, s);
+    const keys = this.cacheMap._map.keys();
+    await fs.promises.writeFile(file, JSON.stringify([...keys]));
   }
 
   run(input: I): { ok: true; hit?: boolean } | { ok: false; output: V } {
     const key = this.options.hashFn(input);
-    if (this.cached.has(key)) {
-      // need to delete/add to simualte LRU
-      this.cached.delete(key);
-      this.cached.add(key);
+    if (this.cacheMap.get(key)) {
       return { ok: true, hit: true };
     }
     const result = this.options.cachedFn(input);
     if (result.ok) {
-      this.cacheKey(key);
+      this.cacheMap.set(key, true);
     }
     return result;
   }
 
   cache(input: I) {
-    this.cacheKey(this.options.hashFn(input));
+    this.cacheMap.set(this.options.hashFn(input), true);
   }
-
-  private cacheKey(key: string) {
-    this.cached.add(key);
-    this.popUntilMaxSize();
-  }
-
-  private popUntilMaxSize() {
-    while (this.cached.size > CACHE_MAX_SIZE) {
-      const next = this.cached.keys().next();
-      if (next.done) {
-        break;
-      }
-      this.cached.delete(next.value);
-    }
-  }
-}
-
-function serializeSet(s: Set<string>): string {
-  const elements: string[] = [...s];
-  return JSON.stringify(elements);
-}
-
-function deserializeSet(s: string): Set<string> {
-  const elements: unknown = JSON.parse(s);
-  tinyassert(Array.isArray(elements));
-  tinyassert(elements.every((e: unknown) => typeof e === "string"));
-  return new Set(elements);
 }
 
 function hashString(input: string): string {

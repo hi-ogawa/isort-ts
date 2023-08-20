@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.1.1",
+  "version": "1.1.2-pre.0",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
@@ -35,7 +35,7 @@
     "--isort-ts": "npm:@hiogawa/isort-ts@1.1.0",
     "@changesets/cli": "^2.26.1",
     "@hiogawa/tiny-cli": "0.0.3",
-    "@hiogawa/utils": "1.6.0",
+    "@hiogawa/utils": "1.6.1-pre.1",
     "@tsconfig/strictest": "^1.0.2",
     "@types/node": "^18.14.1",
     "@types/prettier": "^2.7.2",
