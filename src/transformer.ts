@@ -145,7 +145,6 @@ function extractImportDeclaration(
     const resultGroup = statements.map((node) => {
       tinyassert(ts.isImportDeclaration(node));
       tinyassert(ts.isStringLiteral(node.moduleSpecifier));
-      node.importClause;
       const info: ImportDeclarationInfo = {
         start: node.getStart(),
         end: node.end,
