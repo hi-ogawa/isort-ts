@@ -35,6 +35,7 @@
     "lint-check:isort": "isort-ts --git --cache",
     "lint:prettier": "prettier --write --cache .",
     "lint-check:prettier": "prettier --check --cache .",
+    "prepack": "rm -rf dist && pnpm build",
     "release": "pnpm publish --no-git-checks --access public"
   },
   "devDependencies": {
