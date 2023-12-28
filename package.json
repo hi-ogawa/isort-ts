@@ -6,18 +6,24 @@
     "url": "https://github.com/hi-ogawa/isort-ts"
   },
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "dev": "pnpm run --stream /^dev:/",
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
-    "dev-isort": "node -r esbuild-register ./src/cli.ts",
-    "dev-isort-prettier": "prettier --write . --plugin=./dist/index.js",
+    "dev-isort": "tsx ./src/cli.ts",
+    "dev-isort-prettier": "prettier --write . --plugin=./dist/index.cjs",
     "dev-isort-fix": "pnpm dev-isort --git --fix",
     "dev-isort-check": "pnpm dev-isort --git",
     "build": "tsup",
@@ -39,10 +45,9 @@
     "@tsconfig/strictest": "^2.0.2",
     "@types/node": "^20.10.5",
     "@types/prettier": "^3.0.0",
-    "esbuild": "^0.19.10",
-    "esbuild-register": "^3.5.0",
     "prettier": "^3.1.1",
     "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
   },
