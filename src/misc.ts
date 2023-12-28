@@ -10,7 +10,7 @@ import { builtinModules } from "node:module";
 //   https://github.com/trivago/prettier-plugin-sort-imports/blob/89d66f706423e44f29d525529af37e5d41a74133/src/index.ts#L9
 
 const NODE_BUILTIN_RE = new RegExp(
-  "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")"
+  "^(" + ["node:", ...builtinModules.map((m) => m + "$")].join("|") + ")",
 );
 
 export interface IsortOptions {

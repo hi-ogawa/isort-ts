@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "run-p -c dev:*",
+    "dev": "pnpm run /^dev:*/",
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
     "dev-isort": "node -r esbuild-register ./src/cli.ts",
@@ -23,8 +23,8 @@
     "build": "tsup",
     "test": "vitest",
     "tsc": "tsc -b",
-    "lint": "run-s lint:*",
-    "lint-check": "run-s lint-check:*",
+    "lint": "pnpm run --sequential /^lint:/",
+    "lint-check": "pnpm run --sequential /^lint-check:/",
     "lint:isort": "pnpm lint-check:isort --fix",
     "lint-check:isort": "isort-ts --git --cache",
     "lint:prettier": "prettier --write --cache .",
@@ -32,20 +32,19 @@
     "release": "pnpm publish --no-git-checks --access public"
   },
   "devDependencies": {
-    "--isort-ts": "npm:@hiogawa/isort-ts@1.1.0",
-    "@changesets/cli": "^2.26.1",
-    "@hiogawa/tiny-cli": "0.0.3",
-    "@hiogawa/utils": "1.6.1-pre.1",
-    "@tsconfig/strictest": "^1.0.2",
-    "@types/node": "^18.14.1",
-    "@types/prettier": "^2.7.2",
-    "esbuild": "^0.17.10",
-    "esbuild-register": "^3.4.2",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.3",
-    "tsup": "^6.6.3",
-    "typescript": "^4.9.4",
-    "vitest": "^0.28.5"
+    "--isort-ts": "npm:@hiogawa/isort-ts@1.1.2-pre.0",
+    "@changesets/cli": "^2.27.1",
+    "@hiogawa/tiny-cli": "0.0.4-pre.1",
+    "@hiogawa/utils": "1.6.1-pre.10",
+    "@tsconfig/strictest": "^2.0.2",
+    "@types/node": "^20.10.5",
+    "@types/prettier": "^3.0.0",
+    "esbuild": "^0.19.10",
+    "esbuild-register": "^3.5.0",
+    "prettier": "^3.1.1",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   },
   "peerDependencies": {
     "prettier": "*",
@@ -58,6 +57,6 @@
   },
   "packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246",
   "volta": {
-    "node": "18.19.0"
+    "node": "20.10.0"
   }
 }
