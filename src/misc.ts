@@ -26,11 +26,12 @@ export interface IsortOptions {
 // TODO: make `isortOrder` and `isortIgnoreComments` configurable
 export const DEFAULT_OPTIONS: IsortOptions = {
   // prettier-ignore
-  isortOrder: [      // examples
+  isortOrder: [      // -- examples --
     NODE_BUILTIN_RE, // node:process, process
     /^.*:/,          // virtual:uno.css
-    /^[^./]/,        // any-external
-    /./,             // ./any-local
+    /^[^.#]/,        // any-external
+    /^#/,            // #internal (cf. https://nodejs.org/api/packages.html#imports)
+    /^\./,            // ./any-local
   ],
   isortIgnoreDeclarationSort: false,
   isortIgnoreMemberSort: false,
