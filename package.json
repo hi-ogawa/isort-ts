@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "pnpm run /^dev:*/",
+    "dev": "pnpm run --stream /^dev:/",
     "dev:tsup": "tsup --watch",
     "dev:tsc": "pnpm tsc --watch --preserveWatchOutput",
     "dev-isort": "node -r esbuild-register ./src/cli.ts",
