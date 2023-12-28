@@ -1,17 +1,17 @@
 {
   "name": "@hiogawa/isort-ts",
   "version": "1.1.2-pre.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hi-ogawa/isort-ts"
+  },
+  "license": "MIT",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": "./bin/cli.js",
   "files": [
     "dist"
   ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hi-ogawa/isort-ts"
-  },
   "scripts": {
     "dev": "run-p -c dev:*",
     "dev:tsup": "tsup --watch",
@@ -56,7 +56,8 @@
       "optional": true
     }
   },
+  "packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246",
   "volta": {
-    "node": "18.14.0"
+    "node": "18.19.0"
   }
 }
