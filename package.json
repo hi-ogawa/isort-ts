@@ -44,7 +44,6 @@
     "@hiogawa/utils": "1.6.1-pre.10",
     "@tsconfig/strictest": "^2.0.2",
     "@types/node": "^20.10.5",
-    "@types/prettier": "^3.0.0",
     "prettier": "^3.1.1",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
