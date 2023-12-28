@@ -13,10 +13,7 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
-    }
+    ".": "./dist/index.js"
   },
   "scripts": {
     "dev": "pnpm run --stream /^dev:/",
