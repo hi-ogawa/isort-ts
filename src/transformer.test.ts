@@ -89,9 +89,9 @@ import d from "c";
 import { z, w } from "a";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import { w, z } from \\"a\\";
-      import { x, y } from \\"b\\";
-      import d from \\"c\\";
+      "import { w, z } from "a";
+      import { x, y } from "b";
+      import d from "c";
       "
     `);
   });
@@ -101,7 +101,7 @@ import { z, w } from "a";
 import { y as a, x as b } from "b";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import { x as b, y as a } from \\"b\\";
+      "import { x as b, y as a } from "b";
       "
     `);
   });
@@ -117,11 +117,11 @@ import { z, w } from "a";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
       "// hey
-      import \\"c\\";
-      import { w, z } from \\"a\\"; // xxx
-      import { x, y } from \\"b\\"; // side effect
+      import "c";
+      import { w, z } from "a"; // xxx
+      import { x, y } from "b"; // side effect
       // foo
-      import someDefault from \\"d\\";
+      import someDefault from "d";
       "
     `);
   });
@@ -134,10 +134,10 @@ import { p } from  "c";
 import { z, w } from "a";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import { x, y } from \\"b\\";
+      "import { x, y } from "b";
       // isort-ignore
-      import { p } from  \\"c\\";
-      import { w, z } from \\"a\\";
+      import { p } from  "c";
+      import { w, z } from "a";
       "
     `);
   });
@@ -150,10 +150,10 @@ import { p } from "c";
 import { z, w } from "a";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import { x, y } from \\"b\\";
-      \\"hello\\";
-      import { w, z } from \\"a\\";
-      import { p } from \\"c\\";
+      "import { x, y } from "b";
+      "hello";
+      import { w, z } from "a";
+      import { p } from "c";
       "
     `);
   });
@@ -166,8 +166,8 @@ import "a";
 <input /> satisfies unknown;
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import \\"a\\";
-      import \\"b\\";
+      "import "a";
+      import "b";
 
       <input /> satisfies unknown;
       "
@@ -182,8 +182,8 @@ import "a";
 const f = async <T>(x: T) => x;
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import \\"a\\";
-      import \\"b\\";
+      "import "a";
+      import "b";
 
       const f = async <T>(x: T) => x;
       "
@@ -232,16 +232,16 @@ import i3 from "./index";
 import process2 from "node:process";
 `;
     expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
-      "import \\"side-effect\\";
-      import process2 from \\"node:process\\";
-      import process1 from \\"process\\";
-      import { C, D, a, b } from \\"a\\";
-      import z from \\"external\\";
-      import i1 from \\".\\";
-      import i2 from \\"./\\";
-      import i3 from \\"./index\\";
-      import y from \\"./local-a\\";
-      import x from \\"./local-z\\";
+      "import "side-effect";
+      import process2 from "node:process";
+      import process1 from "process";
+      import { C, D, a, b } from "a";
+      import z from "external";
+      import i1 from ".";
+      import i2 from "./";
+      import i3 from "./index";
+      import y from "./local-a";
+      import x from "./local-z";
       "
     `);
   });
@@ -268,27 +268,27 @@ import { b3 } from "b";
         {
           "column": 0,
           "line": 1,
-          "message": "Duplicate import source \\"a\\"",
+          "message": "Duplicate import source "a"",
         },
         {
           "column": 0,
           "line": 5,
-          "message": "Duplicate import source \\"a\\"",
+          "message": "Duplicate import source "a"",
         },
         {
           "column": 0,
           "line": 2,
-          "message": "Duplicate import source \\"b\\"",
+          "message": "Duplicate import source "b"",
         },
         {
           "column": 0,
           "line": 4,
-          "message": "Duplicate import source \\"b\\"",
+          "message": "Duplicate import source "b"",
         },
         {
           "column": 0,
           "line": 6,
-          "message": "Duplicate import source \\"b\\"",
+          "message": "Duplicate import source "b"",
         },
       ]
     `);

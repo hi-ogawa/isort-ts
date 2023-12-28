@@ -24,14 +24,14 @@ interface ImportSpecifierInfo {
 
 export function tsTransformIsort(
   code: string,
-  options: IsortOptions = DEFAULT_OPTIONS
+  options: IsortOptions = DEFAULT_OPTIONS,
 ): string {
   return new TransformIsort(options).run(code);
 }
 
 export function tsAnalyze(
   code: string,
-  options: IsortOptions = DEFAULT_OPTIONS
+  options: IsortOptions = DEFAULT_OPTIONS,
 ): ImportDeclarationInfo[][] {
   return new TransformIsort(options).analyze(code);
 }
@@ -112,14 +112,14 @@ class TransformIsort {
       (node) =>
         this.options.isortOrder.findIndex((re) => node.source.match(re)),
       (node) =>
-        this.options.isortIgnoreCase ? node.source.toLowerCase() : node.source
+        this.options.isortIgnoreCase ? node.source.toLowerCase() : node.source,
     );
     return replaceSortedNodes(code, nodes, sorted);
   }
 
   sortImportSpecifiers(code: string, nodes: ImportSpecifierInfo[]): string {
     const sorted = sortBy(nodes, (node) =>
-      this.options.isortIgnoreCase ? node.name.toLowerCase() : node.name
+      this.options.isortIgnoreCase ? node.name.toLowerCase() : node.name,
     );
     return replaceSortedNodes(code, nodes, sorted);
   }
@@ -127,15 +127,15 @@ class TransformIsort {
 
 function extractImportDeclaration(
   node: ts.SourceFile,
-  options: IsortOptions
+  options: IsortOptions,
 ): ImportDeclarationInfo[][] {
   const groups: [boolean, ts.Statement[]][] = groupNeighborBy(
     [...node.statements],
     (stmt) =>
       ts.isImportDeclaration(stmt) &&
       !options.isortIgnoreComments.some((comment) =>
-        getTrivia(stmt).includes(comment)
-      )
+        getTrivia(stmt).includes(comment),
+      ),
   );
   const result: ImportDeclarationInfo[][] = [];
   for (const [ok, statements] of groups) {
@@ -162,7 +162,7 @@ function extractImportDeclaration(
 }
 
 function extraceImportSpecifier(
-  node: ts.ImportDeclaration
+  node: ts.ImportDeclaration,
 ): ImportSpecifierInfo[] | undefined {
   const namedImports = node.importClause?.namedBindings;
   if (namedImports && ts.isNamedImports(namedImports)) {
@@ -188,7 +188,7 @@ function getTrivia(node: ts.Node): string {
 function replaceSortedNodes(
   code: string,
   nodes: { start: number; end: number }[],
-  sorted: { start: number; end: number }[]
+  sorted: { start: number; end: number }[],
 ): string {
   const start = nodes[0]?.start;
   const end = nodes.at(-1)?.end;
@@ -242,7 +242,7 @@ interface DuplicateSourceInfo {
 export class DuplicateSourceError extends IsortError {
   constructor(
     private input: string,
-    private duplicates: DuplicateSourceInfo[]
+    private duplicates: DuplicateSourceInfo[],
   ) {
     super(DuplicateSourceError.name);
   }
@@ -256,7 +256,7 @@ export class DuplicateSourceError extends IsortError {
           line,
           column,
         };
-      })
+      }),
     );
   }
 }
@@ -266,7 +266,10 @@ export class DuplicateSourceError extends IsortError {
 //
 
 export class ParseError extends IsortError {
-  constructor(private input: string, private diagnostics: ts.Diagnostic[]) {
+  constructor(
+    private input: string,
+    private diagnostics: ts.Diagnostic[],
+  ) {
     super(ParseError.name);
   }
 
@@ -283,7 +286,7 @@ interface DiagnosticsInfo {
 
 function formatDiagnostic(
   input: string,
-  diagnostic: ts.Diagnostic
+  diagnostic: ts.Diagnostic,
 ): DiagnosticsInfo {
   const { messageText, start } = diagnostic;
   tinyassert(typeof start === "number");

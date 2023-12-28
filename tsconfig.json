@@ -6,7 +6,7 @@
     "exactOptionalPropertyTypes": false,
     "noEmit": true,
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "target": "ESNext",
     "lib": ["ESNext", "DOM"]
   }

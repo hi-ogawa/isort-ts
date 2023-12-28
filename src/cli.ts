@@ -23,7 +23,7 @@ const argsSchema = {
   git: arg.boolean("collect files based on git"),
   cache: arg.boolean("enable caching"),
   isortIgnoreDeclarationSort: arg.boolean(
-    "disable sorting import declarations"
+    "disable sorting import declarations",
   ),
   isortIgnoreMemberSort: arg.boolean("disable sorting import specifiers"),
   isortIgnoreCase: arg.boolean("sort case insensitive"),
@@ -37,7 +37,7 @@ const command = new TinyCliCommand(
     description: "Lint ESM module import order",
     args: argsSchema,
   },
-  ({ args }) => runCommand(args)
+  ({ args }) => runCommand(args),
 );
 
 async function runCommand(options: TypedArgs<typeof argsSchema>) {
@@ -85,7 +85,7 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
         console.log(
           STATUS.success,
           filePath,
-          timeMessage + (result.hit ? " (cached)" : "")
+          timeMessage + (result.hit ? " (cached)" : ""),
         );
         results.correct++;
       } else {
@@ -106,7 +106,7 @@ async function runCommand(options: TypedArgs<typeof argsSchema>) {
           console.error(
             STATUS.error,
             `${filePath}:${detail.line}:${detail.column}`,
-            detail.message
+            detail.message,
           );
         }
       } else {
@@ -162,7 +162,7 @@ export class LruCacheSet<I, V> {
     private options: {
       cachedFn: (input: I) => { ok: boolean; output: V }; // we cache `hashFn(input)` when `ok: true`
       hashFn: (input: I) => string;
-    }
+    },
   ) {}
 
   async load(file: string) {
