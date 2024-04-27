@@ -1,4 +1,8 @@
-# @hiogawa/isort-ts
+# Changelog
+
+## 1.1.2
+
+- fix: fix empty member import [(#37)](https://github.com/hi-ogawa/isort-ts/pull/37)
 
 ## 1.1.0
 
