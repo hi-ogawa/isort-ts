@@ -23,7 +23,7 @@
     "dev-isort-prettier": "prettier --write . --plugin=./dist/index.js",
     "dev-isort-fix": "pnpm dev-isort --git --fix",
     "dev-isort-check": "pnpm dev-isort --git",
-    "build": "tsup",
+    "build": "tsup --clean",
     "test": "vitest",
     "tsc": "tsc -b",
     "lint": "pnpm run --sequential /^lint:/",
@@ -32,7 +32,7 @@
     "lint-check:isort": "isort-ts --git --cache",
     "lint:prettier": "prettier --write --cache .",
     "lint-check:prettier": "prettier --check --cache .",
-    "prepack": "rm -rf dist && pnpm build",
+    "prepack": "pnpm build",
     "release": "pnpm publish --no-git-checks --access public"
   },
   "devDependencies": {
