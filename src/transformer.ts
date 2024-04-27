@@ -54,12 +54,12 @@ class TransformIsort {
     for (const group of groups) {
       if (!this.options.isortIgnoreMemberSort) {
         for (const decl of group) {
-          if (decl.clause?.specifiers) {
+          if (decl.clause?.specifiers?.length) {
             code = this.sortImportSpecifiers(code, decl.clause.specifiers);
           }
         }
       }
-      if (!this.options.isortIgnoreDeclarationSort) {
+      if (!this.options.isortIgnoreDeclarationSort && group.length) {
         code = this.sortImportDeclarations(code, group);
       }
     }

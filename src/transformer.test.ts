@@ -158,6 +158,18 @@ import { z, w } from "a";
     `);
   });
 
+  it("empty members", () => {
+    const input = `\
+import {} from "a";
+import type {} from "b";
+`;
+    expect(tsTransformIsort(input)).toMatchInlineSnapshot(`
+      "import {} from "a";
+      import type {} from "b";
+      "
+    `);
+  });
+
   it("tsx", () => {
     const input = `\
 import "b";
