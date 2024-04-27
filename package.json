@@ -1,6 +1,6 @@
 {
   "name": "@hiogawa/isort-ts",
-  "version": "1.1.2-pre.2",
+  "version": "1.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/hi-ogawa/isort-ts"
@@ -23,7 +23,7 @@
     "dev-isort-prettier": "prettier --write . --plugin=./dist/index.js",
     "dev-isort-fix": "pnpm dev-isort --git --fix",
     "dev-isort-check": "pnpm dev-isort --git",
-    "build": "tsup",
+    "build": "tsup --clean",
     "test": "vitest",
     "tsc": "tsc -b",
     "lint": "pnpm run --sequential /^lint:/",
@@ -32,12 +32,11 @@
     "lint-check:isort": "isort-ts --git --cache",
     "lint:prettier": "prettier --write --cache .",
     "lint-check:prettier": "prettier --check --cache .",
-    "prepack": "rm -rf dist && pnpm build",
+    "prepack": "pnpm build",
     "release": "pnpm publish --no-git-checks --access public"
   },
   "devDependencies": {
     "--isort-ts": "npm:@hiogawa/isort-ts@1.1.2-pre.0",
-    "@changesets/cli": "^2.27.1",
     "@hiogawa/tiny-cli": "0.0.4-pre.1",
     "@hiogawa/utils": "1.6.1-pre.10",
     "@tsconfig/strictest": "^2.0.2",
